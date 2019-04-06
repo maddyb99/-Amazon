@@ -1,0 +1,34 @@
+import 'package:flutter/material.dart';
+import 'package:Not_Amazon/Screens/Login.dart';
+import 'package:Not_Amazon/Screens/Home.dart';
+import 'package:Not_Amazon/Screens/Splash.dart';
+import 'package:Not_Amazon/Screens/ItemList.dart';
+
+void main() => runApp(new MyApp());
+
+class MyApp extends StatelessWidget {
+  // This widget is the root of your application.
+  @override
+  Widget build(BuildContext context) {
+    return new MaterialApp(
+      title: '!Amazon',
+      routes: <String, WidgetBuilder> {
+        '/Splash':(BuildContext context) => new Splash(),
+        '/Login':(BuildContext context) => new Login(),
+        '/Home':(BuildContext context) => new Hme(),
+        '/Items':(BuildContext context) => new Items(cat: "demo"),
+      },
+      theme: new ThemeData(
+        brightness: Brightness.light,
+        primarySwatch: Colors.cyan,
+        buttonColor: Colors.cyanAccent,
+        //scaffoldBackgroundColor: Colors.cyanAccent,
+      ),
+      home: new Splash(),
+    );
+  }
+}
+
+class Home {
+}
+
