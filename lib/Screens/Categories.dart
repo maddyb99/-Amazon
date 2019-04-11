@@ -1,6 +1,4 @@
-import 'package:Not_Amazon/Screens/ItemList.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:expandable/expandable.dart';
 import 'package:flutter/material.dart';
 
 class Category extends StatelessWidget {
@@ -33,37 +31,7 @@ class _CategoryState extends State<Categories> {
     super.initState();
   }
 
-  Widget createCategory(String cat) {
-    return PageView(
-      controller: pageController2,
-      scrollDirection: Axis.vertical,
-      children: <Widget>[
-        ExpandablePanel(
-          header: Center(
-            child: Padding(
-              padding: const EdgeInsets.only(top: 5.0, left: 5.0, right: 5.0),
-              child: createCard(cat),
-            ),
-          ),
-          expanded: FlatButton(
-              onPressed: () {
-                setState(() {
-                  pageController2.animateToPage(1,
-                      duration: Duration(milliseconds: 300),
-                      curve: Curves.linear);
-                });
-              },
-              child: Text('Sublist for' + cat)),
-          //initialExpanded: false,
-          tapHeaderToExpand: true,
-          hasIcon: false,
-        ),
-        Items(cat: cat),
-      ],
-    );
-  }
-
-  Widget createCard(String category) {
+  Widget createCard1(String category) {
     return Card(
       child: Column(
         children: <Widget>[
@@ -80,6 +48,37 @@ class _CategoryState extends State<Categories> {
                   fit: BoxFit.fitHeight,
                 ),
               ),
+            ),
+          ),
+        ],
+      ),
+      shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.only(
+              topLeft: Radius.circular(30.0),
+              bottomRight: Radius.circular(30.0))),
+    );
+  }
+
+  Widget createCard(DocumentSnapshot cat) {
+    return Card(
+      child: Column(
+        children: <Widget>[
+          Hero(
+            tag: cat['title'],
+            child: Container(
+                height: 200.0,
+                width: double.maxFinite,
+                child: Stack(
+                  children: <Widget>[
+                    Center(child: CircularProgressIndicator(value: null,)),
+                    Center(child: Container(
+                      child: Image.network(cat['image']),
+                      color: Theme
+                          .of(context)
+                          .scaffoldBackgroundColor,
+                    )),
+                  ],
+                )
             ),
           ),
         ],
@@ -151,16 +150,22 @@ class _CategoryState extends State<Categories> {
             StreamBuilder(
               stream: Firestore.instance.collection('Category').snapshots(),
               builder: (context, snapshot) {
-                if (!snapshot.hasData) return (Text('Loading...'));
+                if (!snapshot.hasData)
+                  return Center(
+                    child: CircularProgressIndicator(
+                      value: null,
+                    ),
+                  );
                 return ListView.builder(
-                  itemCount: snapshot.data.documents.len,
-                  itemBuilder: (context, index) => ListTile(),
+                  itemCount: snapshot.data.documents.length,
+                  itemBuilder: (context, index) =>
+                      createCard(snapshot.data.documents[index]),
                 );
               },
             ),
-            createCategory("Electronics"),
-            createCategory("Clothes"),
-            createCategory("Furniture"),
+            createCard1("Electronics"),
+            createCard1("Clothes"),
+            createCard1("Furniture"),
           ],
         ),
         /*PageView(

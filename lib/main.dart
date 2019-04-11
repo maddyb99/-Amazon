@@ -21,7 +21,7 @@ class MyApp extends StatelessWidget {
         '/Cat': (BuildContext context) => new Category(),
       },
       theme: new ThemeData(
-        brightness: Brightness.light,
+        brightness: Brightness.dark,
         primarySwatch: Colors.cyan,
         buttonColor: Colors.cyanAccent,
         //scaffoldBackgroundColor: Colors.cyanAccent,
