@@ -1,16 +1,23 @@
+import 'package:Not_Amazon/Drawer.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
 class Hme extends StatelessWidget {
+  FirebaseUser user;
+
+  Hme({this.user});
+
   @override
   Widget build(BuildContext context) {
-    return new HomePage(title: 'Home');
+    return new HomePage(title: 'Home', user: user);
   }
 }
 
 class HomePage extends StatefulWidget {
-  HomePage({Key key, this.title}) : super(key: key);
+  HomePage({Key key, this.title, this.user}) : super(key: key);
 
   final String title;
+  final FirebaseUser user;
 
   @override
   _HomeState createState() => new _HomeState();
@@ -18,7 +25,9 @@ class HomePage extends StatefulWidget {
 
 class _HomeState extends State<HomePage> {
   bool elecflag;
-  Color _backgroundColor=Colors.white,_appBarColor=Colors.cyan,_fabColor=Colors.cyan;
+  Color _appBarColor = Colors.cyan,
+      _fabColor = Colors.cyan;
+
   @override
   Widget build(BuildContext context) {
     return new Scaffold(
@@ -39,30 +48,7 @@ class _HomeState extends State<HomePage> {
         backgroundColor: _appBarColor,
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.all(Radius.circular(10.0))),
       ),
-      drawer: new Drawer(
-        child: ListView(
-          padding: EdgeInsets.all(0.0),
-          children: <Widget>[
-            DrawerHeader(
-              child: new Center(child: new Text('Welcome')),
-              decoration: BoxDecoration(
-                color: Colors.cyan,
-              ),
-            ),
-            FlatButton(
-              onPressed: () {
-                Navigator.of(context).pushNamed('/Cat');
-              },
-              child: new Row(
-                children: <Widget>[
-                  Icon(Icons.category),
-                  Text('Categories')
-                ],
-              ),
-            )
-          ],
-        ),
-      ),
+      drawer: DrawDrawer(user: widget.user),
       floatingActionButton: FloatingActionButton(
         onPressed: () {
           Navigator.of(context).pushNamed('/Login');
@@ -108,7 +94,7 @@ class _HomeState extends State<HomePage> {
             });
         },
       ),*/
-      backgroundColor: _backgroundColor,
+      //backgroundColor: _backgroundColor,
     );
   }
 }

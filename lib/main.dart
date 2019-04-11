@@ -5,7 +5,7 @@ import 'package:Not_Amazon/Screens/Login.dart';
 import 'package:Not_Amazon/Screens/Splash.dart';
 import 'package:flutter/material.dart';
 
-void main() => runApp(new MyApp());
+void main() async => runApp(new MyApp());
 
 class MyApp extends StatelessWidget {
   // This widget is the root of your application.
@@ -21,7 +21,7 @@ class MyApp extends StatelessWidget {
         '/Cat': (BuildContext context) => new Category(),
       },
       theme: new ThemeData(
-        brightness: Brightness.dark,
+        brightness: Brightness.light,
         primarySwatch: Colors.cyan,
         buttonColor: Colors.cyanAccent,
         //scaffoldBackgroundColor: Colors.cyanAccent,

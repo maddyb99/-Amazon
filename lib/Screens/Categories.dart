@@ -1,3 +1,4 @@
+import 'package:Not_Amazon/Drawer.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 
@@ -18,8 +19,7 @@ class Categories extends StatefulWidget {
 }
 
 class _CategoryState extends State<Categories> {
-  Color _backgroundColor = Colors.white,
-      _appBarColor = Colors.cyan,
+  Color _appBarColor = Colors.cyan,
       _fabColor = Colors.cyan;
   ScrollActivityDelegate delegate;
   final pageController2 = PageController(
@@ -119,25 +119,7 @@ class _CategoryState extends State<Categories> {
           shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.all(Radius.circular(10.0))),
         ),
-        drawer: new Drawer(
-          child: ListView(
-            padding: EdgeInsets.all(0.0),
-            children: <Widget>[
-              DrawerHeader(
-                child: new Center(child: new Text('Welcome')),
-                decoration: BoxDecoration(
-                  color: Colors.cyan,
-                ),
-              ),
-              FlatButton(
-                onPressed: null,
-                child: new Row(
-                  children: <Widget>[Icon(Icons.category), Text('Categories')],
-                ),
-              )
-            ],
-          ),
-        ),
+        drawer: DrawDrawer(),
         floatingActionButton: FloatingActionButton(
           onPressed: () {
             Navigator.of(context).pushNamed('/Login');
@@ -204,7 +186,7 @@ class _CategoryState extends State<Categories> {
               });
           },
         ),*/
-        backgroundColor: _backgroundColor,
+        //backgroundColor: _backgroundColor,
       ),
     );
   }
