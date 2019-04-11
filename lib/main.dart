@@ -1,8 +1,9 @@
-import 'package:flutter/material.dart';
-import 'package:Not_Amazon/Screens/Login.dart';
+import 'package:Not_Amazon/Screens/Categories.dart';
 import 'package:Not_Amazon/Screens/Home.dart';
-import 'package:Not_Amazon/Screens/Splash.dart';
 import 'package:Not_Amazon/Screens/ItemList.dart';
+import 'package:Not_Amazon/Screens/Login.dart';
+import 'package:Not_Amazon/Screens/Splash.dart';
+import 'package:flutter/material.dart';
 
 void main() => runApp(new MyApp());
 
@@ -17,6 +18,7 @@ class MyApp extends StatelessWidget {
         '/Login':(BuildContext context) => new Login(),
         '/Home':(BuildContext context) => new Hme(),
         '/Items':(BuildContext context) => new Items(cat: "demo"),
+        '/Cat': (BuildContext context) => new Category(),
       },
       theme: new ThemeData(
         brightness: Brightness.light,

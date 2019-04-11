@@ -143,7 +143,7 @@ class _LoginState extends State<LoginPage> {
                     ),*/
                     new MaterialButton(
                         onPressed: () {
-                          Navigator.of(context).pushReplacementNamed('/Home');
+                          Navigator.of(context).pushReplacementNamed('/Home2');
                         },
                       child: new Image.asset('assets/images/fb.png',
                       scale: 5.0,
@@ -158,7 +158,7 @@ class _LoginState extends State<LoginPage> {
                 children: <Widget>[
                   new MaterialButton(
                     onPressed: () {
-                      final snackBar=SnackBar(
+                      SnackBar(
                         content: Text('dfgvd'),
                       );
                       _displaySnackBar(context);

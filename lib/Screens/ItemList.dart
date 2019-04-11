@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:Not_Amazon/Screens/Home.dart';
 
 class Items extends StatelessWidget {
   final String cat;
