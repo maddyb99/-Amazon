@@ -1,4 +1,5 @@
 import 'package:Not_Amazon/Drawer.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 
@@ -27,9 +28,6 @@ class _CategoryState extends State<Categories> {
     keepPage: false,
   );
 
-  void initState() {
-    super.initState();
-  }
 
   Widget createCard1(String category) {
     return Card(
@@ -63,32 +61,19 @@ class _CategoryState extends State<Categories> {
     return Card(
       child: Column(
         children: <Widget>[
-          Hero(
-            tag: cat['title'],
-            child: Container(
-                height: 200.0,
-                width: double.maxFinite,
-                child: Stack(
-                  children: <Widget>[
-                    Center(child: CircularProgressIndicator(value: null,)),
-                    Center(child: Container(
-                      child: Image.network(cat['image']),
-                      color: Theme
-                          .of(context)
-                          .scaffoldBackgroundColor,
-                    )),
-                  ],
-                )
-            ),
-          ),
+          Container(
+              height: 200.0,
+              width: double.maxFinite,
+              child: CachedNetworkImage(
+                  placeholder: (context, a) =>
+                      Center(child: CircularProgressIndicator()),
+                  imageUrl: cat['image'])),
         ],
       ),
-      shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.only(
-              topLeft: Radius.circular(30.0),
-              bottomRight: Radius.circular(30.0))),
     );
   }
+
+  List<Widget> myList = [];
 
   @override
   Widget build(BuildContext context) {

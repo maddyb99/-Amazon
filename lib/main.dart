@@ -2,6 +2,7 @@ import 'package:Not_Amazon/Screens/Categories.dart';
 import 'package:Not_Amazon/Screens/Home.dart';
 import 'package:Not_Amazon/Screens/ItemList.dart';
 import 'package:Not_Amazon/Screens/Login.dart';
+import 'package:Not_Amazon/Screens/SignUp.dart';
 import 'package:Not_Amazon/Screens/Splash.dart';
 import 'package:flutter/material.dart';
 
@@ -19,6 +20,7 @@ class MyApp extends StatelessWidget {
         '/Home':(BuildContext context) => new Hme(),
         '/Items':(BuildContext context) => new Items(cat: "demo"),
         '/Cat': (BuildContext context) => new Category(),
+        '/SignUp': (BuildContext context) => new SignUp(),
       },
       theme: new ThemeData(
         brightness: Brightness.light,
