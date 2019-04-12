@@ -1,3 +1,5 @@
+import 'dart:async' show Future;
+
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
@@ -50,8 +52,8 @@ class SignUpState extends State<SignUp> {
     if (_signup)
       return Center(
           child: CircularProgressIndicator(
-        value: null,
-      ));
+            value: null,
+          ));
     else
       return new RaisedButton(
         onPressed: signUp,
@@ -82,109 +84,112 @@ class SignUpState extends State<SignUp> {
 
   @override
   Widget build(BuildContext context) {
-    // TODO: implement build
-    return Scaffold(
-      body: Center(
-        child: SingleChildScrollView(
-          child: Column(
-            children: <Widget>[
-              Form(
-                  key: _formKey,
-                  child: Column(
-                    children: <Widget>[
-                      new Container(
-                        width: 300.0,
-                        padding: EdgeInsets.only(bottom: 10.0),
-                        child: new TextFormField(
-                          decoration: new InputDecoration(
-                            labelText: "Name",
-                            //disabledBorder: InputBorder.none,
-                            //enabledBorder: InputBorder.none,
-                          ),
-                          autofocus: false,
-                          keyboardType: TextInputType.emailAddress,
-                          validator: (String value) {
-                            if (value.isEmpty) return 'Enter Name';
-                          },
-                          autovalidate: _autoValidate,
-                          onSaved: (input) => _name = input,
+    return Center(
+      child: SingleChildScrollView(
+        child: Column(
+          children: <Widget>[
+            Form(
+                key: _formKey,
+                child: Column(
+                  children: <Widget>[
+                    new FlatButton(
+                      onPressed: () {
+                        Navigator.of(context).pushReplacementNamed('/Login');
+                      },
+                      child: Icon(Icons.arrow_back),
+                    ),
+                    new Container(
+                      width: 300.0,
+                      padding: EdgeInsets.only(bottom: 10.0),
+                      child: new TextFormField(
+                        decoration: new InputDecoration(
+                          labelText: "Name",
+                          //disabledBorder: InputBorder.none,
+                          //enabledBorder: InputBorder.none,
                         ),
+                        autofocus: false,
+                        keyboardType: TextInputType.emailAddress,
+                        validator: (String value) {
+                          if (value.isEmpty) return 'Enter Name';
+                        },
+                        autovalidate: _autoValidate,
+                        onSaved: (input) => _name = input,
                       ),
-                      new Container(
-                        width: 300.0,
-                        padding: EdgeInsets.only(bottom: 10.0),
-                        child: new TextFormField(
-                          decoration: new InputDecoration(
-                            labelText: "Email or mobile",
-                            //disabledBorder: InputBorder.none,
-                            //enabledBorder: InputBorder.none,
-                          ),
-                          autofocus: false,
-                          keyboardType: TextInputType.emailAddress,
-                          validator: (String value) {
-                            if (value.isEmpty) return 'Enter Email';
-                          },
-                          autovalidate: _autoValidate,
-                          onSaved: (input) => _email = input,
+                    ),
+                    new Container(
+                      width: 300.0,
+                      padding: EdgeInsets.only(bottom: 10.0),
+                      child: new TextFormField(
+                        decoration: new InputDecoration(
+                          labelText: "Email or mobile",
+                          //disabledBorder: InputBorder.none,
+                          //enabledBorder: InputBorder.none,
                         ),
+                        autofocus: false,
+                        keyboardType: TextInputType.emailAddress,
+                        validator: (String value) {
+                          if (value.isEmpty) return 'Enter Email';
+                        },
+                        autovalidate: _autoValidate,
+                        onSaved: (input) => _email = input,
                       ),
-                      new Container(
-                        width: 300.0,
-                        padding: EdgeInsets.only(bottom: 10.0),
-                        child: new TextFormField(
-                          decoration: new InputDecoration(
-                            labelText: "Password",
-                            //disabledBorder: InputBorder.none,
-                            //enabledBorder: InputBorder.none,
-                          ),
-                          autofocus: false,
-                          keyboardType: TextInputType.emailAddress,
-                          validator: (String value) {
-                            if (value.isEmpty)
-                              return 'Enter Password';
-                            else if (value.length < 8)
-                              return 'Too short';
-                            else if (_password != _checkpass)
-                              return 'Passwords dont match';
-                          },
-                          autovalidate: _autoValidate,
-                          obscureText: true,
-                          onSaved: (input) => _password = input,
+                    ),
+                    new Container(
+                      width: 300.0,
+                      padding: EdgeInsets.only(bottom: 10.0),
+                      child: new TextFormField(
+                        decoration: new InputDecoration(
+                          labelText: "Password",
+                          //disabledBorder: InputBorder.none,
+                          //enabledBorder: InputBorder.none,
                         ),
+                        autofocus: false,
+                        keyboardType: TextInputType.emailAddress,
+                        validator: (String value) {
+                          if (value.isEmpty)
+                            return 'Enter Password';
+                          else if (value.length < 8)
+                            return 'Too short';
+                          else if (_password != _checkpass)
+                            return 'Passwords dont match';
+                        },
+                        autovalidate: _autoValidate,
+                        obscureText: true,
+                        onSaved: (input) => _password = input,
                       ),
-                      new Container(
-                        width: 300.0,
-                        padding: EdgeInsets.only(bottom: 10.0),
-                        child: new TextFormField(
-                          decoration: new InputDecoration(
-                            labelText: "Re- enter Password",
-                            //disabledBorder: InputBorder.none,
-                            //enabledBorder: InputBorder.none,
-                          ),
-                          autofocus: false,
-                          keyboardType: TextInputType.emailAddress,
-                          validator: (String value) {
-                            if (value.isEmpty)
-                              return 'Enter Password';
-                            else if (value.length < 8)
-                              return 'Too short';
-                            else if (_password != _checkpass)
-                              return 'Passwords dont match';
-                          },
-                          autovalidate: _autoValidate,
-                          obscureText: true,
-                          onSaved: (input) => _checkpass = input,
+                    ),
+                    new Container(
+                      width: 300.0,
+                      padding: EdgeInsets.only(bottom: 10.0),
+                      child: new TextFormField(
+                        decoration: new InputDecoration(
+                          labelText: "Re- enter Password",
+                          //disabledBorder: InputBorder.none,
+                          //enabledBorder: InputBorder.none,
                         ),
+                        autofocus: false,
+                        keyboardType: TextInputType.emailAddress,
+                        validator: (String value) {
+                          if (value.isEmpty)
+                            return 'Enter Password';
+                          else if (value.length < 8)
+                            return 'Too short';
+                          else if (_password != _checkpass)
+                            return 'Passwords dont match';
+                        },
+                        autovalidate: _autoValidate,
+                        obscureText: true,
+                        onSaved: (input) => _checkpass = input,
                       ),
-                      incorrect(),
-                      new Container(
-                        padding: EdgeInsets.only(top: 10.0),
-                        child: isLogin(),
-                      ),
-                    ],
-                  )),
-            ],
-          ),
+                    ),
+                    incorrect(),
+                    new Container(
+                      padding: EdgeInsets.only(top: 10.0),
+                      child: isLogin(),
+                    ),
+                  ],
+                )),
+          ],
         ),
       ),
     );
