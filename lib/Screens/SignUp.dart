@@ -4,6 +4,10 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
 class SignUp extends StatefulWidget {
+  SignUp({this.fn});
+
+  final VoidCallback fn;
+
   @override
   SignUpState createState() {
     return SignUpState();
@@ -15,7 +19,6 @@ class SignUpState extends State<SignUp> {
   String _email, _password, _checkpass, _name;
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
   FirebaseUser user;
-
   Future<void> signUp() async {
     FormState formState = _formKey.currentState;
     setState(() {
@@ -94,7 +97,8 @@ class SignUpState extends State<SignUp> {
                   children: <Widget>[
                     new FlatButton(
                       onPressed: () {
-                        Navigator.of(context).pushReplacementNamed('/Login');
+                        super.setState(widget.fn);
+                        //Navigator.of(context).pushReplacementNamed('/Login');
                       },
                       child: Icon(Icons.arrow_back),
                     ),
@@ -144,7 +148,6 @@ class SignUpState extends State<SignUp> {
                           //enabledBorder: InputBorder.none,
                         ),
                         autofocus: false,
-                        keyboardType: TextInputType.emailAddress,
                         validator: (String value) {
                           if (value.isEmpty)
                             return 'Enter Password';
@@ -168,7 +171,6 @@ class SignUpState extends State<SignUp> {
                           //enabledBorder: InputBorder.none,
                         ),
                         autofocus: false,
-                        keyboardType: TextInputType.emailAddress,
                         validator: (String value) {
                           if (value.isEmpty)
                             return 'Enter Password';

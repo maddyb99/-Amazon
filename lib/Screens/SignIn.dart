@@ -6,6 +6,18 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 
+bool _autoValidate = false,
+    _login = false,
+    _reset = false,
+    _success = true,
+    _forgot = false,
+    fw = true;
+int _signUp = 0;
+String _email, _password;
+FirebaseUser user;
+FirebaseAuth _auth = FirebaseAuth.instance;
+double _width = 88.0;
+
 class SignIn extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
@@ -19,63 +31,23 @@ class SignInPage extends StatefulWidget {
   _SignInState createState() => _SignInState();
 }
 
-class _SignInState extends State<SignInPage> {
-  bool _autoValidate = false,
-      _login = false,
-      _reset = false,
-      _success = true,
-      _forgot = false;
-  int _signUp = 0;
-  String _email, _password;
-  final _scaffoldKey = GlobalKey<ScaffoldState>();
-  final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
-  FirebaseUser user;
-  FirebaseAuth _auth = FirebaseAuth.instance;
-  double _width = 88.0;
+class _SignInState extends State<SignInPage> with TickerProviderStateMixin {
 
-  void initStat() {
+  final GlobalKey<FormState> _formKey2 = GlobalKey<FormState>();
+  Animation<double> animation;
+  AnimationController controller;
+  Duration d = Duration(seconds: 1);
+
+  void initState() {
+    controller = AnimationController(vsync: this, duration: d);
+    animation = Tween<double>(begin: 0, end: 1).animate(controller);
     user = null;
-  }
-
-  Future<void> _emailLogin() async {
-    setState(() async {
-      final formState = _formKey.currentState;
-      setState(() {
-        _autoValidate = true;
-      });
-      if (formState.validate()) {
-        formState.save();
-        try {
-          setState(() {
-            _login = true;
-            _width = 50.0;
-            _success = true;
-          });
-          user = await _auth.signInWithEmailAndPassword(
-              email: _email, password: _password);
-          Navigator.push(context,
-              MaterialPageRoute(builder: (context) => Hme(user: user)));
-          setState(() {
-            _login = false;
-            _width = 88.0;
-            _autoValidate = false;
-          });
-          formState.reset();
-        } catch (e) {
-          print(e.message);
-          setState(() {
-            _login = false;
-            _width = 88.0;
-            _success = false;
-            _autoValidate = false;
-          });
-        }
-      }
-    });
+    _signUp = 0;
+    super.initState();
   }
 
   Future<void> _emailReset() async {
-    FormState formState = _formKey.currentState;
+    FormState formState = _formKey2.currentState;
     setState(() {
       _autoValidate = true;
     });
@@ -132,24 +104,6 @@ class _SignInState extends State<SignInPage> {
     }
   }
 
-  Widget isLogin() {
-    if (_login)
-      return Container(
-          height: 50.0,
-          width: 50.0,
-          child: Center(
-              child: CircularProgressIndicator(
-            value: null,
-          )));
-    else
-      return new RaisedButton(
-        onPressed: _emailLogin,
-        child: Text('SignIn'),
-        elevation: 2.0,
-        color: Colors.cyanAccent,
-        //shape: RoundedRectangleBorder(borderRadius: BorderRadius.only(topLeft: Radius.circular(10.0),bottomRight: Radius.circular(10.0))),
-      );
-  }
 
   Widget isReset() {
     if (_reset)
@@ -170,21 +124,181 @@ class _SignInState extends State<SignInPage> {
       );
   }
 
-  Widget incorrect() {
-    if (_success)
-      return SizedBox(
-        width: 0.0,
-        height: 0.0,
-      );
-    else
-      return Padding(
-        padding: const EdgeInsets.only(top: 5.0),
-        child: Text(
-          'Incorrect Details!',
-          style: TextStyle(
-            color: Colors.red,
+  Widget forgotPass() {
+    return new Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: <Widget>[
+          new Image.asset(
+            'assets/images/logo.jpeg',
+            fit: BoxFit.contain,
+            scale: 15,
           ),
+          Form(
+            key: _formKey2,
+            child: new Column(children: <Widget>[
+              new Container(
+                width: 300.0,
+                padding: EdgeInsets.only(bottom: 10.0),
+                child: new TextFormField(
+                  decoration: new InputDecoration(
+                    labelText: "Email or mobile",
+                    //disabledBorder: InputBorder.none,
+                    //enabledBorder: InputBorder.none,
+                  ),
+                  autofocus: false,
+                  keyboardType: TextInputType.emailAddress,
+                  validator: (String value) {
+                    if (value.isEmpty) return 'Enter Email';
+                  },
+                  autovalidate: _autoValidate,
+                  onSaved: (input) => _email = input,
+                ),
+              ),
+              Row(
+                mainAxisSize: MainAxisSize.max,
+                mainAxisAlignment: MainAxisAlignment.end,
+                children: <Widget>[
+                  FlatButton(
+                    onPressed: () {
+                      setState(() {
+                        _forgot = !_forgot;
+                      });
+                    },
+                    child: Icon(Icons.arrow_back),
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.only(
+                        right: 28.0, top: 8.0, left: 8.0),
+                    child: isReset(),
+                  ),
+                ],
+              ),
+            ]),
+          ),
+        ]);
+  }
+
+  Widget createBody() {
+    if (_signUp == 1) {
+      fw ? controller.forward(from: 0.0) : controller.reverse();
+      return FadeTransition(
+        opacity: animation,
+        child: Column(
+          children: <Widget>[
+            ListTile(
+                contentPadding: EdgeInsets.only(left: 100.0),
+                leading: Icon(Icons.arrow_back),
+                title: Text('Back to SignIn'),
+                onTap: () {
+                  setState(() {
+                    fw = !fw;
+                  });
+                  Future.delayed(d, () {
+                    setState(() {
+                      fw = !fw;
+                      _signUp = 0;
+                    });
+                  });
+                }),
+            new MaterialButton(
+              onPressed: () {
+                setState(() {
+                  fw = !fw;
+                });
+                Future.delayed(d, () {
+                  setState(() {
+                    fw = !fw;
+                    _signUp = 2;
+                  });
+                });
+              },
+              child: Text('Continue with Email'),
+              color: Theme
+                  .of(context)
+                  .accentColor,
+            ),
+            new MaterialButton(
+              onPressed: () {
+                Navigator.of(context).pushReplacementNamed('/Home');
+              },
+              child: new Image.asset(
+                'assets/images/fb.png',
+                scale: 5.0,
+              ),
+            ),
+            new MaterialButton(
+              onPressed: gLogin,
+              child: new Image.asset(
+                'assets/images/google.png',
+                scale: 1.0,
+              ),
+            ),
+          ],
         ),
+      );
+    }
+    else if (_signUp == 2) {
+      fw ? controller.forward(from: 0.0) : controller.reverse();
+      return FadeTransition(opacity: animation, child: SignUp(fn: random),);
+    }
+    else if (_forgot) {
+      fw ? controller.forward(from: 0.0) : controller.reverse();
+      return FadeTransition(opacity: animation, child: forgotPass(),);
+    }
+    else {
+      fw ? controller.forward(from: 0.0) : controller.reverse();
+      return FadeTransition(opacity: animation, child: MainLogin(fn: random),);
+    }
+  }
+
+  void random() {
+    setState(() {
+      fw = !fw;
+    });
+    Future.delayed(d, () {
+      setState(() {
+        _signUp++;
+        fw = !fw;
+        if (_signUp == 3)
+          _signUp = 0;
+      });
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return createBody();
+  }
+}
+
+class MainLogin extends StatefulWidget {
+  MainLogin({this.fn});
+
+  final VoidCallback fn;
+
+  @override
+  _MainLoginState createState() => _MainLoginState();
+}
+
+class _MainLoginState extends State<MainLogin> {
+  final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
+
+  Widget isLogin() {
+    if (_login)
+      return Container(
+          height: 50.0,
+          width: 50.0,
+          child: Center(
+              child: CircularProgressIndicator(
+                value: null,
+              )));
+    else
+      return new RaisedButton(
+        onPressed: _emailLogin,
+        child: Text('SignIn'),
+        elevation: 2.0,
+        color: Colors.cyanAccent,
+        //shape: RoundedRectangleBorder(borderRadius: BorderRadius.only(topLeft: Radius.circular(10.0),bottomRight: Radius.circular(10.0))),
       );
   }
 
@@ -193,7 +307,7 @@ class _SignInState extends State<SignInPage> {
       return new FlatButton(
           onPressed: () {
             setState(() {
-              _signUp = 1;
+              super.setState(widget.fn);
             });
           },
           child: Text('SignUp?'));
@@ -203,191 +317,119 @@ class _SignInState extends State<SignInPage> {
             setState(() {
               _forgot = !_forgot;
               _success = true;
+              super.setState(widget.fn);
             });
           },
           child: Text('Forgot Password?'));
   }
 
-  Widget createBody() {
-    if (_signUp == 1)
-      return Center(
-        child: SingleChildScrollView(
-          child: Column(
-            children: <Widget>[
-              ListTile(
-                  contentPadding: EdgeInsets.only(left: 100.0),
-                  leading: Icon(Icons.arrow_back),
-                  title: Text('Back to SignIn'),
-                  onTap: () {
-                    setState(() {
-                      _signUp = 0;
-                    });
-                  }),
-              new MaterialButton(
-                onPressed: () {
-                  setState(() {
-                    _signUp = 2;
-                  });
-                },
-                child: Text('Continue with Email'),
-                color: Theme.of(context).accentColor,
-              ),
-              new MaterialButton(
-                onPressed: () {
-                  Navigator.of(context).pushReplacementNamed('/Home');
-                },
-                child: new Image.asset(
-                  'assets/images/fb.png',
-                  scale: 5.0,
-                ),
-              ),
-              new MaterialButton(
-                onPressed: gLogin,
-                child: new Image.asset(
-                  'assets/images/google.png',
-                  scale: 1.0,
-                ),
-              ),
-            ],
-          ),
-        ),
-      );
-    else if (_signUp == 2)
-      return SignUp();
-    else if (_forgot)
-      return new Center(
-        child: SingleChildScrollView(
-          child: new Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: <Widget>[
-                new Image.asset(
-                  'assets/images/logo.jpeg',
-                  fit: BoxFit.contain,
-                  scale: 15,
-                ),
-                Form(
-                  key: _formKey,
-                  child: new Column(children: <Widget>[
-                    new Container(
-                      width: 300.0,
-                      padding: EdgeInsets.only(bottom: 10.0),
-                      child: new TextFormField(
-                        decoration: new InputDecoration(
-                          labelText: "Email or mobile",
-                          //disabledBorder: InputBorder.none,
-                          //enabledBorder: InputBorder.none,
-                        ),
-                        autofocus: false,
-                        keyboardType: TextInputType.emailAddress,
-                        validator: (String value) {
-                          if (value.isEmpty) return 'Enter Email';
-                        },
-                        autovalidate: _autoValidate,
-                        onSaved: (input) => _email = input,
-                      ),
-                    ),
-                    incorrect(),
-                    Row(
-                      mainAxisSize: MainAxisSize.max,
-                      mainAxisAlignment: MainAxisAlignment.end,
-                      children: <Widget>[
-                        FlatButton(
-                          onPressed: () {
-                            setState(() {
-                              _forgot = !_forgot;
-                            });
-                          },
-                          child: Icon(Icons.arrow_back),
-                        ),
-                        Padding(
-                          padding: const EdgeInsets.only(
-                              right: 28.0, top: 8.0, left: 8.0),
-                          child: isReset(),
-                        ),
-                      ],
-                    ),
-                  ]),
-                ),
-              ]),
-        ),
-      );
-    else
-      return new Center(
-        child: SingleChildScrollView(
-          child: new Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: <Widget>[
-                new Image.asset(
-                  'assets/images/logo.jpeg',
-                  fit: BoxFit.contain,
-                  scale: 15,
-                ),
-                Form(
-                  key: _formKey,
-                  child: new Column(children: <Widget>[
-                    new Container(
-                      width: 300.0,
-                      padding: EdgeInsets.only(bottom: 10.0),
-                      child: new TextFormField(
-                        decoration: new InputDecoration(
-                          labelText: "Email or mobile",
-                          //disabledBorder: InputBorder.none,
-                          //enabledBorder: InputBorder.none,
-                        ),
-                        autofocus: false,
-                        keyboardType: TextInputType.emailAddress,
-                        validator: (String value) {
-                          if (value.isEmpty) return 'Enter Email';
-                        },
-                        autovalidate: _autoValidate,
-                        onSaved: (input) => _email = input,
-                      ),
-                    ),
-                    new Container(
-                        width: 300.0,
-                        child: new TextFormField(
-                          obscureText: true,
-                          decoration: new InputDecoration(
-                            labelText: 'Password',
-                            //disabledBorder: InputBorder.none,
-                            //enabledBorder: InputBorder.none,
-                            /*border: OutlineInputBorder(
-                            borderRadius: BorderRadius.only(topLeft: Radius.circular(10.0),bottomRight: Radius.circular(10.0)),
-                          ),*/
-                          ),
-                          validator: (String value) {
-                            if (value.isEmpty)
-                              return 'Enter Password';
-                            else if (value.length < 8) return 'Too Short';
-                          },
-                          autovalidate: _autoValidate,
-                          onSaved: (input) => _password = input,
-                        )),
-                    incorrect(),
-                    Row(
-                      mainAxisSize: MainAxisSize.max,
-                      mainAxisAlignment: MainAxisAlignment.end,
-                      children: <Widget>[
-                        Padding(
-                          padding: const EdgeInsets.only(top: 8.0),
-                          child: forgot(),
-                        ),
-                        Padding(
-                          padding: const EdgeInsets.only(right: 28.0, top: 8.0),
-                          child: isLogin(),
-                        ),
-                      ],
-                    ),
-                  ]),
-                ),
-              ]),
-        ),
-      );
+  Future<void> _emailLogin() async {
+    setState(() async {
+      final formState = _formKey.currentState;
+      setState(() {
+        _autoValidate = true;
+      });
+      if (formState.validate()) {
+        formState.save();
+        try {
+          setState(() {
+            _login = true;
+            _width = 50.0;
+            _success = true;
+          });
+          user = await _auth.signInWithEmailAndPassword(
+              email: _email, password: _password);
+          Navigator.push(context,
+              MaterialPageRoute(builder: (context) => Hme(user: user)));
+          setState(() {
+            _login = false;
+            _width = 88.0;
+            _autoValidate = false;
+          });
+          formState.reset();
+        } catch (e) {
+          SnackBar snackBar = SnackBar(content: Text('Incorrect Details!'));
+          Scaffold.of(context).showSnackBar(snackBar);
+          print(e.message);
+          setState(() {
+            _login = false;
+            _width = 88.0;
+            _success = false;
+            _autoValidate = false;
+          });
+        }
+      }
+    });
   }
 
   @override
   Widget build(BuildContext context) {
-    // TODO: implement build
-    return createBody();
+    return new Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: <Widget>[
+          new Image.asset(
+            'assets/images/logo.jpeg',
+            fit: BoxFit.contain,
+            scale: 15,
+          ),
+          Form(
+            key: _formKey,
+            child: new Column(children: <Widget>[
+              new Container(
+                width: 300.0,
+                padding: EdgeInsets.only(bottom: 10.0),
+                child: new TextFormField(
+                  decoration: new InputDecoration(
+                    labelText: "Email or mobile",
+                    //disabledBorder: InputBorder.none,
+                    //enabledBorder: InputBorder.none,
+                  ),
+                  autofocus: false,
+                  keyboardType: TextInputType.emailAddress,
+                  validator: (String value) {
+                    if (value.isEmpty) return 'Enter Email';
+                  },
+                  autovalidate: _autoValidate,
+                  onSaved: (input) => _email = input,
+                ),
+              ),
+              new Container(
+                width: 300.0,
+                child: new TextFormField(
+                  obscureText: true,
+                  decoration: new InputDecoration(
+                    labelText: 'Password',
+                    //disabledBorder: InputBorder.none,
+                    //enabledBorder: InputBorder.none,
+                    /*border: OutlineInputBorder(
+                        borderRadius: BorderRadius.only(topLeft: Radius.circular(10.0),bottomRight: Radius.circular(10.0)),
+                      ),*/
+                  ),
+                  validator: (String value) {
+                    if (value.isEmpty)
+                      return 'Enter Password';
+                    else if (value.length < 8) return 'Too Short';
+                  },
+                  autovalidate: _autoValidate,
+                  onSaved: (input) => _password = input,
+                ),
+              ),
+              Row(
+                mainAxisSize: MainAxisSize.max,
+                mainAxisAlignment: MainAxisAlignment.end,
+                children: <Widget>[
+                  Padding(
+                    padding: const EdgeInsets.only(top: 8.0),
+                    child: forgot(),
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.only(right: 28.0, top: 8.0),
+                    child: isLogin(),
+                  ),
+                ],
+              ),
+            ]),
+          ),
+        ]);
   }
 }

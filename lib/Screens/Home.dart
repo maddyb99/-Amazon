@@ -18,7 +18,6 @@ class HomePage extends StatefulWidget {
 
   final String title;
   final FirebaseUser user;
-
   @override
   _HomeState createState() => new _HomeState();
 }

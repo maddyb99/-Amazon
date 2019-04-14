@@ -6,6 +6,8 @@ import 'package:Not_Amazon/Screens/SignUp.dart';
 import 'package:Not_Amazon/Screens/Splash.dart';
 import 'package:flutter/material.dart';
 
+Brightness b = Brightness.light;
+
 void main() async => runApp(new MyApp());
 
 class MyApp extends StatelessWidget {
@@ -22,8 +24,14 @@ class MyApp extends StatelessWidget {
         '/Cat': (BuildContext context) => new Category(),
         '/SignUp': (BuildContext context) => new SignUp(),
       },
+      darkTheme: new ThemeData(
+        brightness: Brightness.dark,
+        primarySwatch: Colors.cyan,
+        buttonColor: Colors.cyanAccent,
+        //scaffoldBackgroundColor: Colors.cyanAccent,
+      ),
       theme: new ThemeData(
-        brightness: Brightness.light,
+        brightness: b,
         primarySwatch: Colors.cyan,
         buttonColor: Colors.cyanAccent,
         //scaffoldBackgroundColor: Colors.cyanAccent,
@@ -31,8 +39,5 @@ class MyApp extends StatelessWidget {
       home: new Splash(),
     );
   }
-}
-
-class Home {
 }
 

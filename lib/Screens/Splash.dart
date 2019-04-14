@@ -1,5 +1,6 @@
-import 'package:flutter/material.dart';
 import 'dart:async';
+
+import 'package:flutter/material.dart';
 
 class Splash extends StatefulWidget {
   @override
@@ -13,7 +14,6 @@ class SplashState extends State<Splash> {
   void initState() {
     //print(MediaQuery.of(context).size.height);
     //print(MediaQuery.of(context).size.width);
-
     Future.delayed(Duration(seconds: 2), () {
       Navigator.of(context)
           .pushReplacementNamed('/Login');

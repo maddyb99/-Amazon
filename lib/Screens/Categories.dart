@@ -19,44 +19,25 @@ class Categories extends StatefulWidget {
   _CategoryState createState() => new _CategoryState();
 }
 
-class _CategoryState extends State<Categories> {
+class _CategoryState extends State<Categories> with TickerProviderStateMixin {
   Color _appBarColor = Colors.cyan,
       _fabColor = Colors.cyan;
   ScrollActivityDelegate delegate;
+  List<Widget> tab;
+  TabController _tabController;
   final pageController2 = PageController(
     initialPage: 0,
     keepPage: false,
   );
+  PageController _pageController = PageController(
+    initialPage: 0,
 
+  );
 
-  Widget createCard1(String category) {
-    return Card(
-      child: Column(
-        children: <Widget>[
-          Hero(
-            tag: category,
-            child: Container(
-              height: 200.0,
-              width: double.maxFinite,
-              decoration: new BoxDecoration(
-                image: DecorationImage(
-                  image: new AssetImage('assets/images/categories/' +
-                      category.toLowerCase() +
-                      '.PNG'),
-                  fit: BoxFit.fitHeight,
-                ),
-              ),
-            ),
-          ),
-        ],
-      ),
-      shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.only(
-              topLeft: Radius.circular(30.0),
-              bottomRight: Radius.circular(30.0))),
-    );
+  void initState() {
+    _tabController = TabController(length: 4, vsync: this, initialIndex: 0);
+    super.initState();
   }
-
   Widget createCard(DocumentSnapshot cat) {
     return Card(
       child: Column(
@@ -73,106 +54,112 @@ class _CategoryState extends State<Categories> {
     );
   }
 
-  List<Widget> myList = [];
-
+  Widget tabs() {
+    return PreferredSize(
+      preferredSize: Size(double.maxFinite, 50.0),
+      child: StreamBuilder(
+        stream: Firestore.instance.collection('Category').snapshots(),
+        builder: (context, snapshot) {
+          if (!snapshot.hasData)
+            return Center(
+              child: CircularProgressIndicator(
+                value: null,
+              ),
+            );
+          tab = new List<Widget>.generate(
+            snapshot.data.documents.length,
+                (i) =>
+                Tab(
+                  child: Row(
+                    children: <Widget>[
+                      Padding(
+                          padding: const EdgeInsets.only(left: 8.0, right: 8.0),
+                          child: CachedNetworkImage(
+                            imageUrl: snapshot.data.documents[i]['icon'],
+                            height: 25.0,
+                            width: 25.0,
+                            placeholder: (context, a) =>
+                                Center(child: CircularProgressIndicator(),),
+                          )
+                      ),
+                      Text(snapshot.data.documents[i]['title']),
+                    ],
+                  ),
+                ),
+          );
+          return TabBar(
+            tabs: tab,
+            isScrollable: true,
+            controller: _tabController,
+            onTap: (int tab) {
+              _pageController.animateToPage(
+                  tab, duration: Duration(milliseconds: 300),
+                  curve: Curves.linear);
+            },
+          );
+        },
+      ),
+    );
+  }
   @override
   Widget build(BuildContext context) {
-    return DefaultTabController(
-      length: 4,
-      child: new Scaffold(
-        appBar: AppBar(
-          title: new Text('!Amazon'),
-          //backgroundColor: Colors.black,
-          leading: Builder(
-            builder: (BuildContext context) {
-              return IconButton(
-                icon: const Icon(Icons.menu),
-                onPressed: () {
-                  Scaffold.of(context).openDrawer();
-                },
-                tooltip: MaterialLocalizations.of(context).openAppDrawerTooltip,
-              );
-            },
-          ),
-          bottom: TabBar(tabs: [
-            Tab(text: 'Electronics'),
-            Tab(text: 'Clothes'),
-            Tab(text: 'Furniture'),
-            Tab(text: 'Home'),
-          ]),
-          backgroundColor: _appBarColor,
-          shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.all(Radius.circular(10.0))),
-        ),
-        drawer: DrawDrawer(),
-        floatingActionButton: FloatingActionButton(
-          onPressed: () {
-            Navigator.of(context).pushNamed('/Login');
-          },
-          child: Icon(Icons.shopping_cart),
-          backgroundColor: _fabColor,
-        ),
-        body: TabBarView(
-          children: [
-            StreamBuilder(
-              stream: Firestore.instance.collection('Category').snapshots(),
-              builder: (context, snapshot) {
-                if (!snapshot.hasData)
-                  return Center(
-                    child: CircularProgressIndicator(
-                      value: null,
-                    ),
-                  );
-                return ListView.builder(
-                  itemCount: snapshot.data.documents.length,
-                  itemBuilder: (context, index) =>
-                      createCard(snapshot.data.documents[index]),
-                );
+    return new Scaffold(
+      appBar: AppBar(
+        title: new Text('!Amazon'),
+        //backgroundColor: Colors.black,
+        leading: Builder(
+          builder: (BuildContext context) {
+            return IconButton(
+              icon: const Icon(Icons.menu),
+              onPressed: () {
+                Scaffold.of(context).openDrawer();
               },
-            ),
-            createCard1("Electronics"),
-            createCard1("Clothes"),
-            createCard1("Furniture"),
-          ],
-        ),
-        /*PageView(
-          controller: pageController,
-          children: <Widget>[
-            createCategory("Electronics"),
-            createCategory("Clothes"),
-            createCategory("Furniture"),
-            createCategory("Gadget"),
-          ],
-          scrollDirection: Axis.horizontal,
-          onPageChanged: (int page){
-            if(pageController.page.round()==0)
-              setState(() {
-                _backgroundColor=Colors.greenAccent[100];
-                _appBarColor=Colors.lightGreen;
-                _fabColor=Colors.lightGreen;
-              });
-            else if(pageController.page.round()==1)
-              setState(() {
-                _backgroundColor=Colors.pinkAccent[100];
-                _appBarColor=Colors.pink;
-                _fabColor=Colors.pink;
-              });
-            else if(pageController.page.round()==2)
-              setState(() {
-                _backgroundColor=Colors.brown[100];
-                _appBarColor=Colors.brown;
-                _fabColor=Colors.brown;
-              });
-            else if(pageController.page.round()==3)
-              setState(() {
-                _backgroundColor=Colors.deepOrangeAccent[100];
-                _appBarColor=Colors.deepOrangeAccent;
-                _fabColor=Colors.deepOrangeAccent;
-              });
+              tooltip: MaterialLocalizations
+                  .of(context)
+                  .openAppDrawerTooltip,
+            );
           },
-        ),*/
-        //backgroundColor: _backgroundColor,
+        ),
+        bottom: tabs(),
+        backgroundColor: _appBarColor,
+        shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.all(Radius.circular(10.0))),
       ),
+      drawer: DrawDrawer(color: _appBarColor,),
+      floatingActionButton: FloatingActionButton(
+        onPressed: () {
+          Navigator.of(context).pushNamed('/Login');
+        },
+        child: Icon(Icons.shopping_cart),
+        backgroundColor: _fabColor,
+      ),
+      body: StreamBuilder(
+        stream: Firestore.instance.collection('Category').snapshots(),
+        builder: (context, snapshot) {
+          if (!snapshot.hasData)
+            return Center(
+              child: CircularProgressIndicator(
+                value: null,
+              ),
+            );
+          List<Widget> cards = new List<Widget>.generate(
+              snapshot.data.documents.length,
+                  (i) => createCard(snapshot.data.documents[i]));
+
+          return PageView(
+            children: cards,
+            controller: _pageController,
+            onPageChanged: (int page) {
+              _appBarColor =
+                  Color(snapshot.data.documents[page.round()]['color']);
+              _fabColor = Color(snapshot.data.documents[page.round()]['color']);
+              if (_tabController.animation.value.round() != page)
+                _tabController.animateTo(page);
+            },
+          );
+        },
+      ),
+      //backgroundColor: _backgroundColor,
     );
   }
 }

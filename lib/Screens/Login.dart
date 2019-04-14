@@ -42,7 +42,11 @@ class _LoginState extends State<LoginPage> {
         elevation: 0.0,
         bottomOpacity: 0.0,
       ),
-      body: SignIn(),
+      body: Center(
+        child: SingleChildScrollView(
+            child: SignIn()
+        ),
+      ),
     );
   }
 }
