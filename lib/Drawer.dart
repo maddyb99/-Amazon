@@ -2,32 +2,21 @@ import 'package:Not_Amazon/main.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
-class DrawDrawer extends StatelessWidget {
-  final FirebaseUser user;
-  Color color;
+class DrawDrawer extends StatefulWidget {
+  final Color color;
 
-  DrawDrawer({Key key, this.user, this.color});
+  DrawDrawer({this.color = null});
 
-  @override
-  Widget build(BuildContext context) {
-    return new DrawDrawerPage(user: user);
-  }
-}
-
-class DrawDrawerPage extends StatefulWidget {
-  DrawDrawerPage({Key key, this.user, this.color}) : super(key: key);
-  Color color = Colors.cyan;
-  final FirebaseUser user;
-
-  @override
-  _DrawDrawerState createState() => new _DrawDrawerState();
-}
-
-class _DrawDrawerState extends State<DrawDrawerPage> {
   static bool _night = false;
 
+  @override
+  _DrawDrawerState createState() => _DrawDrawerState();
+}
+
+class _DrawDrawerState extends State<DrawDrawer> {
   Widget nightIcon() {
-    return (_night) ? Icon(Icons.brightness_low) : Icon(Icons.brightness_high);
+    return (DrawDrawer._night) ? Icon(Icons.brightness_low) : Icon(
+        Icons.brightness_high);
   }
 
   @override
@@ -41,8 +30,16 @@ class _DrawDrawerState extends State<DrawDrawerPage> {
                 DrawerHeader(
                   child: new Center(child: new Text('Welcome')),
                   decoration: BoxDecoration(
-                    color: widget.color,
+                    color: widget.color == null ? Colors.cyan : widget.color,
                   ),
+                ),
+                ListTile(
+                  leading: Icon(Icons.home),
+                  title: Text('Home'),
+                  onTap: () {
+                    Navigator.pop(context);
+                    Navigator.of(context).pushReplacementNamed('/Home');
+                  },
                 ),
                 ListTile(
                   leading: Icon(Icons.sort),
@@ -60,13 +57,13 @@ class _DrawDrawerState extends State<DrawDrawerPage> {
             height: 2.0,
           ),
           SwitchListTile(
-            value: _night,
+            value: DrawDrawer._night,
             secondary: nightIcon(),
             title: Text('Night Mode'),
             onChanged: (newValue) {
               setState(() {
-                _night = newValue;
-                b = (_night) ? Brightness.dark : Brightness.light;
+                DrawDrawer._night = newValue;
+                b = (DrawDrawer._night) ? Brightness.dark : Brightness.light;
               });
             },
           ),

@@ -33,14 +33,13 @@ class SignUpState extends State<SignUp> {
         });
         user = await FirebaseAuth.instance
             .createUserWithEmailAndPassword(email: _email, password: _password);
-        Navigator.of(context).pushNamed('/Home');
+        Navigator.of(context).pushReplacementNamed('/Home');
         setState(() {
           _signup = false;
           _autoValidate = false;
         });
         formState.reset();
       } catch (e) {
-        // TODO
         print(e.message);
         setState(() {
           _signup = false;

@@ -7,11 +7,13 @@ ThemeData _themeData = ThemeData(
   buttonColor: Colors.cyanAccent,
 );
 
+// ignore: camel_case_types
 class _brightnessData extends StatefulWidget {
   @override
   __brightnessDataState createState() => __brightnessDataState();
 }
 
+// ignore: camel_case_types
 class __brightnessDataState extends State<_brightnessData> {
   bool _nightMode = false;
 

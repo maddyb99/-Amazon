@@ -1,4 +1,5 @@
 import 'package:Not_Amazon/Drawer.dart';
+import 'package:Not_Amazon/FloatingActionButton.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
@@ -24,8 +25,11 @@ class HomePage extends StatefulWidget {
 
 class _HomeState extends State<HomePage> {
   bool elecflag;
-  Color _appBarColor = Colors.cyan,
-      _fabColor = Colors.cyan;
+  ScrollController _controller = ScrollController(
+    initialScrollOffset: 60.0,
+    keepScrollOffset: true,
+
+  );
 
   @override
   Widget build(BuildContext context) {
@@ -44,19 +48,31 @@ class _HomeState extends State<HomePage> {
             );
           },
         ),
-        backgroundColor: _appBarColor,
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.all(Radius.circular(10.0))),
       ),
-      drawer: DrawDrawer(user: widget.user),
-      floatingActionButton: FloatingActionButton(
-        onPressed: () {
-          Navigator.of(context).pushNamed('/Login');
-        },
-        child: Icon(Icons.shopping_cart),
-        backgroundColor: _fabColor,
-      ),
-      body:
-      Text("Homepage"),
+        drawer: DrawDrawer(),
+        floatingActionButton: FABCart(),
+        body: SingleChildScrollView(
+          controller: _controller,
+          child: Center(
+            child: Container(
+              width: 325.0,
+              height: double.maxFinite,
+              child: Column(
+                children: <Widget>[
+                  TextFormField(
+                    decoration: new InputDecoration(
+                      labelText: "Search Here",
+                      //disabledBorder: InputBorder.,
+                      //enabledBorder: InputBorder.none,
+                    ),
+                    autofocus: false,
+                  ),
+                ],
+              ),
+            ),
+          ),
+        )
       /*PageView(
         controller: pageController,
         children: <Widget>[

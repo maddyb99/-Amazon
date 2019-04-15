@@ -21,7 +21,6 @@ double _width = 88.0;
 class SignIn extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    // TODO: implement build
     return SignInPage();
   }
 }
@@ -86,7 +85,7 @@ class _SignInState extends State<SignInPage> with TickerProviderStateMixin {
         idToken: auth.idToken,
       );
       user = await _auth.signInWithCredential(credential);
-      Navigator.push(
+      Navigator.pushReplacement(
           context, MaterialPageRoute(builder: (context) => Hme(user: user)));
       setState(() {
         _login = false;
@@ -150,6 +149,7 @@ class _SignInState extends State<SignInPage> with TickerProviderStateMixin {
                   validator: (String value) {
                     if (value.isEmpty) return 'Enter Email';
                   },
+                  initialValue: _email,
                   autovalidate: _autoValidate,
                   onSaved: (input) => _email = input,
                 ),
@@ -247,7 +247,8 @@ class _SignInState extends State<SignInPage> with TickerProviderStateMixin {
     }
     else {
       fw ? controller.forward(from: 0.0) : controller.reverse();
-      return FadeTransition(opacity: animation, child: MainLogin(fn: random),);
+      return FadeTransition(
+        opacity: animation, child: MainLogin(fn: random, fn2: random2),);
     }
   }
 
@@ -258,9 +259,21 @@ class _SignInState extends State<SignInPage> with TickerProviderStateMixin {
     Future.delayed(d, () {
       setState(() {
         _signUp++;
-        fw = !fw;
         if (_signUp == 3)
           _signUp = 0;
+        fw = !fw;
+      });
+    });
+  }
+
+  void random2() {
+    setState(() {
+      fw = !fw;
+    });
+    Future.delayed(d, () {
+      setState(() {
+        _forgot = !_forgot;
+        fw = !fw;
       });
     });
   }
@@ -272,9 +285,9 @@ class _SignInState extends State<SignInPage> with TickerProviderStateMixin {
 }
 
 class MainLogin extends StatefulWidget {
-  MainLogin({this.fn});
+  MainLogin({this.fn, this.fn2});
 
-  final VoidCallback fn;
+  final VoidCallback fn, fn2;
 
   @override
   _MainLoginState createState() => _MainLoginState();
@@ -315,9 +328,8 @@ class _MainLoginState extends State<MainLogin> {
       return new FlatButton(
           onPressed: () {
             setState(() {
-              _forgot = !_forgot;
-              _success = true;
-              super.setState(widget.fn);
+              _success = !_success;
+              super.setState(widget.fn2);
             });
           },
           child: Text('Forgot Password?'));
@@ -339,7 +351,7 @@ class _MainLoginState extends State<MainLogin> {
           });
           user = await _auth.signInWithEmailAndPassword(
               email: _email, password: _password);
-          Navigator.push(context,
+          Navigator.pushReplacement(context,
               MaterialPageRoute(builder: (context) => Hme(user: user)));
           setState(() {
             _login = false;
