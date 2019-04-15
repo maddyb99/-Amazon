@@ -1,36 +1,19 @@
 import 'package:flutter/material.dart';
 
-Brightness b = Brightness.light;
-ThemeData _themeData = ThemeData(
-  brightness: b,
-  primarySwatch: Colors.cyan,
-  buttonColor: Colors.cyanAccent,
-);
+class _ThemeData {
+  static final _ThemeData _singleton = new _ThemeData._internal();
 
-// ignore: camel_case_types
-class _brightnessData extends StatefulWidget {
-  @override
-  __brightnessDataState createState() => __brightnessDataState();
-}
+  factory _ThemeData(){
+    return _singleton;
+  }
 
-// ignore: camel_case_types
-class __brightnessDataState extends State<_brightnessData> {
-  bool _nightMode = false;
+  ThemeData theme;
+  String lol = "Hahayes";
 
-  Widget _changeBrightness() {
-    setState(() {
-      _nightMode = !_nightMode;
-      b = (_nightMode) ? Brightness.dark : Brightness.light;
-    });
-    return SizedBox(
-      width: 0.0,
-      height: 0.0,
+  _ThemeData._internal(){
+    theme = new ThemeData(
+        brightness: Brightness.dark
     );
   }
-
-  @override
-  Widget build(BuildContext context) {
-    // TODO: implement build
-    return _changeBrightness();
-  }
 }
+

@@ -27,7 +27,7 @@ class _CategoryState extends State<Categories> with TickerProviderStateMixin {
   ScrollActivityDelegate delegate;
   List<Widget> tab;
   TabController _tabController;
-  int _itemCount;
+  int _itemCount, _categoryid, _pid;
 
   PageController _pageController = PageController(
     initialPage: 0,
@@ -56,12 +56,8 @@ class _CategoryState extends State<Categories> with TickerProviderStateMixin {
             ),
             elevation: 0.0,
           ),
-          ItemPage(fn: addCart, id: 1, color: _appBarColor, items: _itemCount,),
-          ItemPage(fn: addCart, id: 2, color: _appBarColor, items: _itemCount,),
-          ItemPage(fn: addCart, id: 3, color: _appBarColor, items: _itemCount,),
-          ItemPage(fn: addCart, id: 4, color: _appBarColor, items: _itemCount,),
-          ItemPage(fn: addCart, id: 5, color: _appBarColor, items: _itemCount,),
-          ItemPage(fn: addCart, id: 6, color: _appBarColor, items: _itemCount,),
+          ItemPage(
+              fn: addCart, color: _appBarColor, items: _itemCount, id: _pid)
         ],
       ),
     );
@@ -156,9 +152,11 @@ class _CategoryState extends State<Categories> with TickerProviderStateMixin {
             setState(() {
               _appBarColor =
                   Color(snapshot.data.documents[page.round()]['color']);
+              _categoryid = page.round();
               _fabColor = Color(snapshot.data.documents[page.round()]['color']);
               if (_tabController.animation.value.round() != page)
                 _tabController.animateTo(page);
+              _pid = snapshot.data.documents[page.round()]['id'];
             });
           },
         );

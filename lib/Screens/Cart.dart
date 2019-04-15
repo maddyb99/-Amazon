@@ -24,6 +24,7 @@ class _CartState extends State<Cart> {
     return Card(
       //color: Colors.black,
       child: ListTile(
+        dense: true,
         contentPadding: EdgeInsets.all(0.0),
         leading: Container(
           padding: EdgeInsets.all(0.0),
@@ -37,24 +38,35 @@ class _CartState extends State<Cart> {
           height: 50.0,
         ),
         title: Text("iPhone"),
+        trailing: FlatButton(onPressed: null, child: Icon(Icons.delete)),
         subtitle: Row(
           children: <Widget>[
             Text("Qty:"),
-            FlatButton(
-                onPressed: () {
-                  setState(() {
-                    if (_qty > 0) _qty--;
-                  });
-                },
-                child: Icon(Icons.remove)),
+            Container(
+              height: 50.0,
+              width: 50.0,
+              child: FlatButton(
+                  onPressed: () {
+                    setState(() {
+                      if (_qty > 0) _qty--;
+                    });
+                  },
+                  child: Icon(Icons.remove)
+              ),
+            ),
             Text(_qty.toString()),
-            FlatButton(
-                onPressed: () {
-                  setState(() {
-                    _qty++;
-                  });
-                },
-                child: Icon(Icons.add)),
+            Container(
+              height: 50.0,
+              width: 50.0,
+              child: FlatButton(
+                  onPressed: () {
+                    setState(() {
+                      _qty++;
+                    });
+                  },
+                  child: Icon(Icons.add)
+              ),
+            ),
           ],
         ),
       ),

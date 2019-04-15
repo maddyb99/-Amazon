@@ -1,5 +1,8 @@
 import 'package:Not_Amazon/Drawer.dart';
 import 'package:Not_Amazon/FloatingActionButton.dart';
+import 'package:Not_Amazon/Screens/ProductPage.dart';
+import 'package:cached_network_image/cached_network_image.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
@@ -30,6 +33,53 @@ class _HomeState extends State<HomePage> {
     keepScrollOffset: true,
 
   );
+
+  Widget BuildList() {
+    return StreamBuilder(
+        stream: Firestore.instance.collection("Products").snapshots(),
+        builder: (context, snapshot) {
+          if (!snapshot.hasData)
+            return Center(child: CircularProgressIndicator(),);
+          else {
+            List<Widget> itemList = new List();
+            for (int i = 0; i < snapshot.data.documents.length; i++) {
+              itemList.add(
+                  Card(
+                    child: FlatButton(
+                      child: Column(
+                        children: <Widget>[
+                          Hero(
+                            tag: snapshot.data.documents[i]["id"],
+                            child: CachedNetworkImage(
+                              imageUrl: snapshot.data.documents[i]["image"][0],
+                              height: 50.0,
+                              width: 50.0,
+                              placeholder: (context, a) =>
+                                  Center(child: CircularProgressIndicator(),),
+                            ),
+                          ),
+                          Center(
+                              child: Text(snapshot.data.documents[i]["title"])),
+                        ],
+                      ),
+                      onPressed: () {
+                        Navigator.of(context).push(
+                            MaterialPageRoute(builder: (context) =>
+                                ProductPage(
+                                  id: snapshot.data.documents[i]["id"],)));
+                      },
+                    ),
+                  )
+              );
+            }
+            print(itemList.length);
+            return Column(
+              children: itemList,
+            );
+          }
+        }
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -68,6 +118,7 @@ class _HomeState extends State<HomePage> {
                     ),
                     autofocus: false,
                   ),
+                  BuildList(),
                 ],
               ),
             ),

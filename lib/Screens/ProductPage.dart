@@ -1,5 +1,7 @@
 import 'package:Not_Amazon/Drawer.dart';
 import 'package:Not_Amazon/FloatingActionButton.dart';
+import 'package:cached_network_image/cached_network_image.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 
 class ProductPage extends StatefulWidget {
@@ -13,6 +15,76 @@ class ProductPage extends StatefulWidget {
 }
 
 class _ProductPageState extends State<ProductPage> {
+  PageController controller = new PageController(initialPage: 0);
+
+  Widget buildItem() {
+    return StreamBuilder(
+        stream: Firestore.instance.collection("Products").snapshots(),
+        builder: (context, snapshot) {
+          if (!snapshot.hasData)
+            return Center(child: CircularProgressIndicator(),);
+          else {
+            List<Widget> itemList = new List(),
+                imageList = new List();
+            for (int i = 0; i < snapshot.data.documents.length; i++) {
+              if (snapshot.data.documents[i]["id"] == widget.id) {
+                for (int j = 0; j < snapshot.data.documents[i]["image"].length;
+                j++) {
+                  imageList.add(
+                    CachedNetworkImage(
+                      imageUrl: snapshot.data.documents[i]["image"][j],
+                      height: 300.0,
+                      width: double.maxFinite,
+                      placeholder: (context, a) =>
+                          Center(child: CircularProgressIndicator(),),
+                    ),
+                  );
+                }
+                itemList.add(
+                  Hero(
+                      tag: snapshot.data.documents[i]["id"],
+                      child: Container(
+                        width: double.maxFinite,
+                        height: 300.0,
+                        child: Stack(
+                          children: <Widget>[
+                            PageView(
+                              children: imageList,
+                            ),
+                            Align(
+                              alignment: Alignment.centerRight,
+                              child: Icon(Icons.chevron_right, size: 35.0,),
+                            ),
+                            Align(
+                              alignment: Alignment.centerLeft,
+                              child: Icon(Icons.chevron_left, size: 35.0,),
+                            )
+                          ],
+                        ),
+                      )
+                  ),
+                );
+                itemList.add(
+                    Divider(height: 5.0,)
+                );
+                itemList.add(
+                    Row(
+                      children: <Widget>[
+                        Text(snapshot.data.documents[i]["title"]),
+                      ],
+                    )
+                );
+              }
+            }
+            print(itemList.length);
+            return Column(
+              children: itemList,
+            );
+          }
+        }
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -38,25 +110,7 @@ class _ProductPageState extends State<ProductPage> {
           items: widget.item,
         ),
         body: SingleChildScrollView(
-          child: Column(
-            children: <Widget>[
-              Hero(
-                tag: widget.id,
-                child: Container(
-                  width: double.maxFinite,
-                  height: 300.0,
-                  decoration: BoxDecoration(
-                    image: DecorationImage(
-                        image: AssetImage("assets/images/products/iphone.PNG"),
-                        fit: BoxFit.contain),
-                  ),
-                ),
-              ),
-              Divider(
-                height: 5.0,
-              ),
-            ],
-          ),
+          child: buildItem(),
         ));
   }
 }
