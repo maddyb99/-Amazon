@@ -27,15 +27,9 @@ class _CategoryListState extends State<CategoryListPage>
   Color _appBarColor = Colors.cyan, _fabColor = Colors.cyan;
   ScrollActivityDelegate delegate;
   List<Widget> tab;
-  TabController _tabController;
-  int _itemCount, _categoryid, _pid;
-
-  PageController _pageController = PageController(
-    initialPage: 0,
-  );
+  int _itemCount, _pid;
 
   void initState() {
-    _tabController = TabController(length: 4, vsync: this, initialIndex: 0);
     _itemCount = 0;
 
     refresh();

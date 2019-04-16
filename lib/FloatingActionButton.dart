@@ -4,7 +4,7 @@ class FABCart extends StatefulWidget {
   final color;
   final int items;
 
-  FABCart({this.color = null, this.items = 0});
+  FABCart({this.color = Colors.cyan, this.items = 0});
 
   @override
   _FABCartState createState() => _FABCartState();
@@ -48,9 +48,7 @@ class _FABCartState extends State<FABCart> {
           itemCount(),
         ],
       ),
-      backgroundColor: widget.color != null
-          ? widget.color
-          : Theme.of(context).appBarTheme.color,
+      backgroundColor: widget.color,
     );
   }
 }
@@ -58,7 +56,7 @@ class _FABCartState extends State<FABCart> {
 class FABCloseCart extends StatefulWidget {
   final color;
 
-  FABCloseCart({this.color = null});
+  FABCloseCart({this.color = Colors.cyan});
 
   @override
   _FABCloseCartState createState() => _FABCloseCartState();
@@ -72,9 +70,7 @@ class _FABCloseCartState extends State<FABCloseCart> {
         Navigator.of(context).pop();
       },
       child: Icon(Icons.clear),
-      backgroundColor: widget.color != null
-          ? widget.color
-          : Theme.of(context).appBarTheme.color,
+      backgroundColor: widget.color,
     );
   }
 }

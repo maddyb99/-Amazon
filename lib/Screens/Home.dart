@@ -34,7 +34,7 @@ class _HomeState extends State<HomePage> {
 
   );
 
-  Widget BuildList() {
+  Widget buildList() {
     return StreamBuilder(
         stream: Firestore.instance.collection("Products").snapshots(),
         builder: (context, snapshot) {
@@ -119,7 +119,7 @@ class _HomeState extends State<HomePage> {
                     ),
                     autofocus: false,
                   ),
-                  BuildList(),
+                  buildList(),
                 ],
               ),
             ),

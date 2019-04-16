@@ -1,7 +1,5 @@
 import 'package:Not_Amazon/Drawer.dart';
 import 'package:Not_Amazon/FloatingActionButton.dart';
-import 'package:cached_network_image/cached_network_image.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 
 class Cart extends StatefulWidget {
@@ -10,7 +8,6 @@ class Cart extends StatefulWidget {
 }
 
 class _CartState extends State<Cart> {
-  Color _appBarColor = Colors.cyan[300];
   int _qty;
 
   void initState() {
@@ -73,7 +70,7 @@ class _CartState extends State<Cart> {
     );
   }
 
-  Widget cartItems() {
+  /*Widget cartItems() {
     StreamBuilder(
         stream: Firestore.instance.collection('users').snapshots(),
         builder: (context, snapshot) {
@@ -102,7 +99,7 @@ class _CartState extends State<Cart> {
                 ),
           );
         });
-  }
+  }*/
 
   @override
   Widget build(BuildContext context) {
@@ -122,7 +119,7 @@ class _CartState extends State<Cart> {
           },
         ),
         actions: <Widget>[FlatButton(onPressed: null, child: Text("Checkout"))],
-        backgroundColor: _appBarColor = Colors.cyan[300],
+        backgroundColor: Colors.cyan[300],
         shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.all(Radius.circular(10.0))),
       ),

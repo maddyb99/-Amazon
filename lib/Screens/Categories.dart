@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:Not_Amazon/Drawer.dart';
 import 'package:Not_Amazon/FloatingActionButton.dart';
 import 'package:Not_Amazon/Screens/ItemList.dart';
@@ -29,15 +31,17 @@ class _CategoryState extends State<Categories> with TickerProviderStateMixin {
   Color _appBarColor = Colors.cyan,
       _fabColor = Colors.cyan;
   ScrollActivityDelegate delegate;
-  List<Widget> tab;
+  List<Widget> tab, cards;
   TabController _tabController;
-  int _itemCount, _categoryid, _pid;
-
+  int _itemCount, _pid, _length;
+  CollectionReference reference;
+  QuerySnapshot snapshot;
+  bool _loaded;
   PageController _pageController;
 
   void initState() {
-    _tabController =
-        TabController(length: 4, vsync: this, initialIndex: widget.initpage);
+    _loaded = false;
+    tabs();
     _itemCount = widget.initpage;
     print(widget.initpage);
     _pageController = PageController(
@@ -46,6 +50,7 @@ class _CategoryState extends State<Categories> with TickerProviderStateMixin {
     refresh();
     super.initState();
   }
+
   Widget createCard(DocumentSnapshot cat) {
     return SingleChildScrollView(
       child: Column(
@@ -62,7 +67,10 @@ class _CategoryState extends State<Categories> with TickerProviderStateMixin {
             elevation: 0.0,
           ),
           ItemPage(
-              fn: addCart, color: _appBarColor, items: _itemCount, id: _pid)
+              fn: addCart,
+              color: _appBarColor,
+              items: _itemCount,
+              id: cat["id"])
         ],
       ),
     );
@@ -89,89 +97,70 @@ class _CategoryState extends State<Categories> with TickerProviderStateMixin {
         }
     );
   }
-  Widget tabs() {
-    return PreferredSize(
-      preferredSize: Size(double.maxFinite, 50.0),
-      child: StreamBuilder(
-        stream: Firestore.instance.collection('Category').snapshots(),
-        builder: (context, snapshot) {
-          if (!snapshot.hasData)
-            return Center(
-              child: CircularProgressIndicator(
-                value: null,
+
+  // ignore: missing_return
+  Future<void> tabs() async {
+    reference = Firestore.instance.collection("Category");
+    snapshot = await reference.getDocuments();
+    setState(() {
+      _loaded = true;
+    });
+    _length = snapshot.documents.length;
+    _tabController =
+        TabController(
+            length: _length, vsync: this, initialIndex: widget.initpage);
+    tab = new List();
+    for (int i = 0; i < _length; i++) {
+      tab.add(
+        Tab(
+          child: Row(
+            children: <Widget>[
+              Padding(
+                  padding: const EdgeInsets.only(left: 8.0, right: 8.0),
+                  child: Hero(
+                    tag: "c" +
+                        snapshot.documents[i]["id"].toString(),
+                    child: CachedNetworkImage(
+                      imageUrl: snapshot.documents[i]['icon'],
+                      height: 25.0,
+                      width: 25.0,
+                      placeholder: (context, a) =>
+                          Center(child: CircularProgressIndicator(),),
+                    ),
+                  )
               ),
-            );
-          tab = new List<Widget>.generate(
-            snapshot.data.documents.length,
-                (i) =>
-                Tab(
-                  child: Row(
-                    children: <Widget>[
-                      Padding(
-                          padding: const EdgeInsets.only(left: 8.0, right: 8.0),
-                          child: Hero(
-                            tag: "c" +
-                                snapshot.data.documents[i]["id"].toString(),
-                          child: CachedNetworkImage(
-                            imageUrl: snapshot.data.documents[i]['icon'],
-                            height: 25.0,
-                            width: 25.0,
-                            placeholder: (context, a) =>
-                                Center(child: CircularProgressIndicator(),),
-                          ),
-                          )
-                      ),
-                      Text(snapshot.data.documents[i]['title']),
-                    ],
-                  ),
-                ),
-          );
-          return TabBar(
-            tabs: tab,
-            isScrollable: true,
-            controller: _tabController,
-            onTap: (int tab) {
-              _pageController.animateToPage(
-                  tab, duration: Duration(milliseconds: 300),
-                  curve: Curves.linear);
-            },
-          );
-        },
-      ),
-    );
+              Text(snapshot.documents[i]['title']),
+            ],
+          ),
+        ),
+      );
+    }
+    pages();
   }
 
-  Widget pages() {
-    return StreamBuilder(
-      stream: Firestore.instance.collection('Category').snapshots(),
-      builder: (context, snapshot) {
-        if (!snapshot.hasData)
-          return Center(
-            child: CircularProgressIndicator(
-              value: null,
-            ),
-          );
-        List<Widget> cards = new List<Widget>.generate(
-            snapshot.data.documents.length,
-                (i) => createCard(snapshot.data.documents[i]));
-        return PageView(
-          children: cards,
-          controller: _pageController,
-          onPageChanged: (int page) {
-            setState(() {
-              _appBarColor =
-                  Color(snapshot.data.documents[page.round()]['color']);
-              _categoryid = page.round();
-              _fabColor = Color(snapshot.data.documents[page.round()]['color']);
-              if (_tabController.animation.value.round() != page)
-                _tabController.animateTo(page);
-              _pid = snapshot.data.documents[page.round()]['id'];
-            });
-          },
-        );
-      },
-    );
+  Widget tabcreate() {
+    if (_loaded)
+      return TabBar(
+          tabs: tab,
+          isScrollable: true,
+          controller: _tabController,
+          onTap: (int tab) {
+            _pageController.animateToPage(
+                tab, duration: Duration(milliseconds: 300),
+                curve: Curves.linear);
+          }
+      );
+    else
+      return CircularProgressIndicator();
   }
+
+  void pages() {
+    cards = new List();
+    for (int i = 0; i < _length; i++) {
+      cards.add(createCard(snapshot.documents[i]));
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return new Scaffold(
@@ -191,14 +180,27 @@ class _CategoryState extends State<Categories> with TickerProviderStateMixin {
             );
           },
         ),
-        bottom: tabs(),
+        bottom: tabcreate(),
         backgroundColor: _appBarColor,
         shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.all(Radius.circular(10.0))),
       ),
       drawer: DrawDrawer(color: _appBarColor),
       floatingActionButton: FABCart(color: _fabColor, items: _itemCount),
-      body: pages(),
+      body: PageView(
+        controller: _pageController,
+        children: cards,
+        onPageChanged: (int page) {
+          setState(() {
+            _appBarColor =
+                Color(snapshot.documents[page.round()]['color']);
+            _fabColor = Color(snapshot.documents[page.round()]['color']);
+            if (_tabController.animation.value.round() != page)
+              _tabController.animateTo(page);
+            _pid = snapshot.documents[page.round()]['id'];
+          });
+        },
+      ),
       //backgroundColor: _backgroundColor,
     );
   }

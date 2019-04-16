@@ -16,9 +16,66 @@ class ItemPage extends StatefulWidget {
 
 class _ItemState extends State <ItemPage>{
   int count = 0;
+  CollectionReference reference;
+  QuerySnapshot snapshot;
+  List<Widget> itemList;
 
-  Widget BuildList() {
-    return StreamBuilder(
+  void initState() {
+    buildList();
+    itemList = null;
+  }
+
+  void buildList() async {
+    //initState();
+    reference = Firestore.instance.collection("Products");
+    snapshot = await reference.getDocuments();
+    setState(() {
+
+    });
+    itemList = new List();
+    for (int i = 0; i < snapshot.documents.length; i++) {
+      if (snapshot.documents[i]["catid"] == widget.id) {
+        print(snapshot.documents[i]["catid"]);
+        itemList.add(
+          Card(
+              child: ListTile(
+                isThreeLine: true,
+                leading: Hero(
+                  tag: "p" +
+                      snapshot.documents[i]["id"].toString(),
+                  child: CachedNetworkImage(
+                    imageUrl: snapshot.documents[i]["image"][0],
+                    height: 50.0,
+                    width: 50.0,
+                    placeholder: (context, a) =>
+                        CircularProgressIndicator(),
+                  ),
+                ),
+                title: Text(snapshot.documents[i]["title"]),
+                subtitle: Text("Price: " +
+                    snapshot.documents[i]["price"].toString()),
+                trailing: MaterialButton(
+                  elevation: 2.0,
+                  child: Text("Add to cart"),
+                  onPressed: () {
+                    super.setState(widget.fn);
+                  },
+                ),
+                onTap: () {
+                  Navigator.of(context).push(
+                      MaterialPageRoute(builder: (context) =>
+                          ProductPage(
+                            id: snapshot.documents[i]["id"],
+                            color: widget.color,
+                            item: widget.items,)));
+                },
+              )
+          ),
+        );
+      }
+    }
+    //print(itemList.length);
+    /*StreamBuilder(
         stream: Firestore.instance.collection("Products").snapshots(),
         builder: (context, snapshot) {
           if (!snapshot.hasData)
@@ -70,12 +127,17 @@ class _ItemState extends State <ItemPage>{
             );
           }
         }
-    );
+    );*/
   }
 
   @override
   Widget build(BuildContext context) {
-    return BuildList();
+    if (itemList != null)
+      return Column(
+        children: itemList,
+      );
+    else
+      return CircularProgressIndicator();
   }
 }
 

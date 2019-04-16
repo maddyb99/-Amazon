@@ -5,7 +5,7 @@ import 'package:flutter/material.dart';
 class DrawDrawer extends StatefulWidget {
   final Color color;
 
-  DrawDrawer({this.color = null});
+  DrawDrawer({this.color = Colors.cyan});
 
   static bool _night = false;
 
@@ -30,7 +30,7 @@ class _DrawDrawerState extends State<DrawDrawer> {
                 DrawerHeader(
                   child: new Center(child: new Text('Welcome')),
                   decoration: BoxDecoration(
-                    color: widget.color == null ? Colors.cyan : widget.color,
+                    color: widget.color,
                   ),
                 ),
                 ListTile(
