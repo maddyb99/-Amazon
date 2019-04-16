@@ -104,6 +104,9 @@ class _CategoryState extends State<Categories> with TickerProviderStateMixin {
     snapshot = await reference.getDocuments();
     setState(() {
       _loaded = true;
+      _appBarColor =
+          Color(snapshot.documents[widget.initpage]['color']);
+      _fabColor = Color(snapshot.documents[widget.initpage]['color']);
     });
     _length = snapshot.documents.length;
     _tabController =
