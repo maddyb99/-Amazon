@@ -1,5 +1,6 @@
 import 'package:Not_Amazon/Screens/Cart.dart';
 import 'package:Not_Amazon/Screens/Categories.dart';
+import 'package:Not_Amazon/Screens/CategoryList.dart';
 import 'package:Not_Amazon/Screens/Home.dart';
 import 'package:Not_Amazon/Screens/ItemList.dart';
 import 'package:Not_Amazon/Screens/Login.dart';
@@ -24,6 +25,7 @@ class MyApp extends StatelessWidget {
         '/Home':(BuildContext context) => new Hme(),
         '/Items': (BuildContext context) => new ItemPage(),
         '/Cat': (BuildContext context) => new Category(),
+        '/CatList': (BuildContext context) => new CategoryList(),
         '/SignUp': (BuildContext context) => new SignUp(),
         '/Cart': (BuildContext context) => new Cart(),
         '/Product': (BuildContext context) => new ProductPage(),

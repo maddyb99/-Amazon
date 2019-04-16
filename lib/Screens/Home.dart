@@ -49,7 +49,8 @@ class _HomeState extends State<HomePage> {
                       child: Column(
                         children: <Widget>[
                           Hero(
-                            tag: snapshot.data.documents[i]["id"],
+                            tag: "p" +
+                                snapshot.data.documents[i]["id"].toString(),
                             child: CachedNetworkImage(
                               imageUrl: snapshot.data.documents[i]["image"][0],
                               height: 50.0,

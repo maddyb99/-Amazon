@@ -1,51 +1,47 @@
 import 'package:Not_Amazon/Drawer.dart';
 import 'package:Not_Amazon/FloatingActionButton.dart';
+import 'package:Not_Amazon/Screens/Categories.dart';
 import 'package:Not_Amazon/Screens/ItemList.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 
-class Category extends StatelessWidget {
-  Category({this.initpage});
-
-  final int initpage;
-
+class CategoryList extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    return new Categories(title: 'Categories', initpage: initpage,);
+    return new CategoryListPage(title: 'CategoryList');
   }
 }
 
-class Categories extends StatefulWidget {
-  Categories({Key key, this.title, this.initpage}) : super(key: key);
-  final int initpage;
+class CategoryListPage extends StatefulWidget {
+  CategoryListPage({Key key, this.title}) : super(key: key);
+
   final String title;
 
   @override
-  _CategoryState createState() => new _CategoryState();
+  _CategoryListState createState() => new _CategoryListState();
 }
 
-class _CategoryState extends State<Categories> with TickerProviderStateMixin {
-  Color _appBarColor = Colors.cyan,
-      _fabColor = Colors.cyan;
+class _CategoryListState extends State<CategoryListPage>
+    with TickerProviderStateMixin {
+  Color _appBarColor = Colors.cyan, _fabColor = Colors.cyan;
   ScrollActivityDelegate delegate;
   List<Widget> tab;
   TabController _tabController;
   int _itemCount, _categoryid, _pid;
 
-  PageController _pageController;
+  PageController _pageController = PageController(
+    initialPage: 0,
+  );
 
   void initState() {
-    _tabController =
-        TabController(length: 4, vsync: this, initialIndex: widget.initpage);
-    _itemCount = widget.initpage;
-    print(widget.initpage);
-    _pageController = PageController(
-      initialPage: widget.initpage,
-    );
+    _tabController = TabController(length: 4, vsync: this, initialIndex: 0);
+    _itemCount = 0;
+
     refresh();
     super.initState();
   }
+
   Widget createCard(DocumentSnapshot cat) {
     return SingleChildScrollView(
       child: Column(
@@ -57,8 +53,7 @@ class _CategoryState extends State<Categories> with TickerProviderStateMixin {
                 child: CachedNetworkImage(
                     placeholder: (context, a) =>
                         Center(child: CircularProgressIndicator()),
-                    imageUrl: cat['image'])
-            ),
+                    imageUrl: cat['image'])),
             elevation: 0.0,
           ),
           ItemPage(
@@ -84,11 +79,10 @@ class _CategoryState extends State<Categories> with TickerProviderStateMixin {
     StreamBuilder(
         stream: Firestore.instance.collection('Category').snapshots(),
         builder: (context, snapshot) {
-          while (!snapshot.hasData)
-            update(snapshot.data.documents);
-        }
-    );
+          while (!snapshot.hasData) update(snapshot.data.documents);
+        });
   }
+
   Widget tabs() {
     return PreferredSize(
       preferredSize: Size(double.maxFinite, 50.0),
@@ -103,8 +97,11 @@ class _CategoryState extends State<Categories> with TickerProviderStateMixin {
             );
           tab = new List<Widget>.generate(
             snapshot.data.documents.length,
-                (i) =>
-                Tab(
+            (i) => FlatButton(
+                  onPressed: () {
+                    Navigator.of(context).push(MaterialPageRoute(
+                        builder: (context) => Category(initpage: i)));
+                  },
                   child: Row(
                     children: <Widget>[
                       Padding(
@@ -112,66 +109,28 @@ class _CategoryState extends State<Categories> with TickerProviderStateMixin {
                           child: Hero(
                             tag: "c" +
                                 snapshot.data.documents[i]["id"].toString(),
-                          child: CachedNetworkImage(
-                            imageUrl: snapshot.data.documents[i]['icon'],
-                            height: 25.0,
-                            width: 25.0,
-                            placeholder: (context, a) =>
-                                Center(child: CircularProgressIndicator(),),
-                          ),
-                          )
-                      ),
+                            child: CachedNetworkImage(
+                              imageUrl: snapshot.data.documents[i]['icon'],
+                              height: 25.0,
+                              width: 25.0,
+                              placeholder: (context, a) => Center(
+                                    child: CircularProgressIndicator(),
+                                  ),
+                            ),
+                          )),
                       Text(snapshot.data.documents[i]['title']),
                     ],
                   ),
                 ),
           );
-          return TabBar(
-            tabs: tab,
-            isScrollable: true,
-            controller: _tabController,
-            onTap: (int tab) {
-              _pageController.animateToPage(
-                  tab, duration: Duration(milliseconds: 300),
-                  curve: Curves.linear);
-            },
+          return Column(
+            children: tab,
           );
         },
       ),
     );
   }
 
-  Widget pages() {
-    return StreamBuilder(
-      stream: Firestore.instance.collection('Category').snapshots(),
-      builder: (context, snapshot) {
-        if (!snapshot.hasData)
-          return Center(
-            child: CircularProgressIndicator(
-              value: null,
-            ),
-          );
-        List<Widget> cards = new List<Widget>.generate(
-            snapshot.data.documents.length,
-                (i) => createCard(snapshot.data.documents[i]));
-        return PageView(
-          children: cards,
-          controller: _pageController,
-          onPageChanged: (int page) {
-            setState(() {
-              _appBarColor =
-                  Color(snapshot.data.documents[page.round()]['color']);
-              _categoryid = page.round();
-              _fabColor = Color(snapshot.data.documents[page.round()]['color']);
-              if (_tabController.animation.value.round() != page)
-                _tabController.animateTo(page);
-              _pid = snapshot.data.documents[page.round()]['id'];
-            });
-          },
-        );
-      },
-    );
-  }
   @override
   Widget build(BuildContext context) {
     return new Scaffold(
@@ -185,20 +144,17 @@ class _CategoryState extends State<Categories> with TickerProviderStateMixin {
               onPressed: () {
                 Scaffold.of(context).openDrawer();
               },
-              tooltip: MaterialLocalizations
-                  .of(context)
-                  .openAppDrawerTooltip,
+              tooltip: MaterialLocalizations.of(context).openAppDrawerTooltip,
             );
           },
         ),
-        bottom: tabs(),
         backgroundColor: _appBarColor,
         shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.all(Radius.circular(10.0))),
       ),
       drawer: DrawDrawer(color: _appBarColor),
       floatingActionButton: FABCart(color: _fabColor, items: _itemCount),
-      body: pages(),
+      body: tabs(),
       //backgroundColor: _backgroundColor,
     );
   }

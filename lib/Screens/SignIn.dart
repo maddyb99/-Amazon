@@ -57,6 +57,7 @@ class _SignInState extends State<SignInPage> with TickerProviderStateMixin {
           _width = 50.0;
           _success = true;
         });
+        formState.save();
         await FirebaseAuth.instance.sendPasswordResetEmail(email: _email);
         setState(() {
           _reset = false;

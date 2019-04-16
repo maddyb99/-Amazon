@@ -46,10 +46,10 @@ class _DrawDrawerState extends State<DrawDrawer> {
                   title: Text('Category'),
                   onTap: () {
                     Navigator.pop(context);
-                    Navigator.of(context).pushNamed('/Cat');
+                    Navigator.of(context).pushNamed('/CatList');
                   },
-                  trailing: Icon(Icons.arrow_drop_down),
                 ),
+                Divider(height: 5.0,),
               ],
             ),
           ),

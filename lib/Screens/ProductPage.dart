@@ -31,37 +31,37 @@ class _ProductPageState extends State<ProductPage> {
                 for (int j = 0; j < snapshot.data.documents[i]["image"].length;
                 j++) {
                   imageList.add(
-                    CachedNetworkImage(
-                      imageUrl: snapshot.data.documents[i]["image"][j],
-                      height: 300.0,
-                      width: double.maxFinite,
-                      placeholder: (context, a) =>
-                          Center(child: CircularProgressIndicator(),),
+                    Hero(
+                      tag: "p" + snapshot.data.documents[i]["id"].toString(),
+                      child: CachedNetworkImage(
+                        imageUrl: snapshot.data.documents[i]["image"][j],
+                        height: 300.0,
+                        width: double.maxFinite,
+                        placeholder: (context, a) =>
+                            Center(child: CircularProgressIndicator(),),
+                      ),
                     ),
                   );
                 }
                 itemList.add(
-                  Hero(
-                      tag: snapshot.data.documents[i]["id"],
-                      child: Container(
-                        width: double.maxFinite,
-                        height: 300.0,
-                        child: Stack(
-                          children: <Widget>[
-                            PageView(
-                              children: imageList,
-                            ),
-                            Align(
-                              alignment: Alignment.centerRight,
-                              child: Icon(Icons.chevron_right, size: 35.0,),
-                            ),
-                            Align(
-                              alignment: Alignment.centerLeft,
-                              child: Icon(Icons.chevron_left, size: 35.0,),
-                            )
-                          ],
+                  Container(
+                    width: double.maxFinite,
+                    height: 300.0,
+                    child: Stack(
+                      children: <Widget>[
+                        PageView(
+                          children: imageList,
                         ),
-                      )
+                        Align(
+                          alignment: Alignment.centerRight,
+                          child: Icon(Icons.chevron_right, size: 35.0,),
+                        ),
+                        Align(
+                          alignment: Alignment.centerLeft,
+                          child: Icon(Icons.chevron_left, size: 35.0,),
+                        )
+                      ],
+                    ),
                   ),
                 );
                 itemList.add(
@@ -76,7 +76,6 @@ class _ProductPageState extends State<ProductPage> {
                 );
               }
             }
-            print(itemList.length);
             return Column(
               children: itemList,
             );

@@ -32,7 +32,8 @@ class _ItemState extends State <ItemPage>{
                       child: ListTile(
                         isThreeLine: true,
                         leading: Hero(
-                          tag: snapshot.data.documents[i]["id"],
+                          tag: "p" +
+                              snapshot.data.documents[i]["id"].toString(),
                           child: CachedNetworkImage(
                             imageUrl: snapshot.data.documents[i]["image"][0],
                             height: 50.0,
@@ -64,7 +65,6 @@ class _ItemState extends State <ItemPage>{
                 );
               }
             }
-            print(itemList.length);
             return Column(
               children: itemList,
             );
