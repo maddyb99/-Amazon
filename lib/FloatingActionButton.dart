@@ -1,26 +1,43 @@
+import 'package:Not_Amazon/Global.dart';
 import 'package:flutter/material.dart';
 
 class FABCart extends StatefulWidget {
   final color;
-  final int items;
 
-  FABCart({this.color = Colors.cyan, this.items = 0});
+  FABCart({this.color = Colors.cyan});
 
   @override
   _FABCartState createState() => _FABCartState();
 }
 
 class _FABCartState extends State<FABCart> {
+  int count;
+
+  void initState() {
+    count = 0;
+    Update();
+    Future.delayed(Duration(seconds: 2), () {
+      setState(() {
+        count = cartsnapshot != null ? cartsnapshot.documents.length : 0;
+      });
+    });
+    //count=cartsnapshot.documents.length;
+    super.initState();
+  }
+
   Widget itemCount() {
-    if (widget.items > 0)
+    setState(() {
+      count = cartsnapshot != null ? cartsnapshot.documents.length : 0;
+    });
+    if (count > 0)
       return Container(
         height: double.maxFinite,
         width: double.maxFinite,
         padding:
-            EdgeInsets.only(right: widget.items > 9 ? 6.0 : 13.0, bottom: 13.0),
+        EdgeInsets.only(right: count > 9 ? 6.0 : 13.0, bottom: 13.0),
         alignment: Alignment.bottomRight,
         child: Text(
-          widget.items.toString(),
+          count.toString(),
           style: TextStyle(
             color: Colors.black,
             fontSize: 10.5,

@@ -28,12 +28,16 @@ class HomePage extends StatefulWidget {
 
 class _HomeState extends State<HomePage> {
   bool elecflag;
+  GlobalKey<FormState> _formkey = GlobalKey<FormState>();
+  String _search;
   ScrollController _controller = ScrollController(
     initialScrollOffset: 60.0,
     keepScrollOffset: true,
-
   );
 
+  void initState() {
+    _search = null;
+  }
   Widget buildList() {
     return StreamBuilder(
         stream: Firestore.instance.collection("Products").snapshots(),
@@ -43,35 +47,41 @@ class _HomeState extends State<HomePage> {
           else {
             List<Widget> itemList = new List();
             for (int i = 0; i < snapshot.data.documents.length; i++) {
-              itemList.add(
-                  Card(
-                    child: FlatButton(
-                      child: Column(
-                        children: <Widget>[
-                          Hero(
-                            tag: "p" +
-                                snapshot.data.documents[i]["id"].toString(),
-                            child: CachedNetworkImage(
-                              imageUrl: snapshot.data.documents[i]["image"][0],
-                              height: 50.0,
-                              width: 50.0,
-                              placeholder: (context, a) =>
-                                  Center(child: CircularProgressIndicator(),),
+              if (_search == null ||
+                  snapshot.data.documents[i]["title"].toLowerCase().contains(
+                      _search.toLowerCase())) {
+                itemList.add(
+                    Card(
+                      child: FlatButton(
+                        child: Column(
+                          children: <Widget>[
+                            Hero(
+                              tag: "p" +
+                                  snapshot.data.documents[i]["id"].toString(),
+                              child: CachedNetworkImage(
+                                imageUrl: snapshot.data
+                                    .documents[i]["image"][0],
+                                height: 50.0,
+                                width: 50.0,
+                                placeholder: (context, a) =>
+                                    Center(child: CircularProgressIndicator(),),
+                              ),
                             ),
-                          ),
-                          Center(
-                              child: Text(snapshot.data.documents[i]["title"])),
-                        ],
+                            Center(
+                                child: Text(
+                                    snapshot.data.documents[i]["title"])),
+                          ],
+                        ),
+                        onPressed: () {
+                          Navigator.of(context).push(
+                              MaterialPageRoute(builder: (context) =>
+                                  ProductPage(
+                                    id: snapshot.data.documents[i]["id"],)));
+                        },
                       ),
-                      onPressed: () {
-                        Navigator.of(context).push(
-                            MaterialPageRoute(builder: (context) =>
-                                ProductPage(
-                                  id: snapshot.data.documents[i]["id"],)));
-                      },
-                    ),
-                  )
-              );
+                    )
+                );
+              }
             }
             print(itemList.length);
             return Column(
@@ -86,7 +96,8 @@ class _HomeState extends State<HomePage> {
   Widget build(BuildContext context) {
     return new Scaffold(
       appBar: AppBar(
-        title: new Text('!Amazon'),
+        title: new Image.asset(
+          'assets/images/logo.png', color: Colors.black, fit: BoxFit.fill,),
         //backgroundColor: Colors.black,
         leading: Builder(
           builder: (BuildContext context) {
@@ -111,13 +122,23 @@ class _HomeState extends State<HomePage> {
               height: double.maxFinite,
               child: Column(
                 children: <Widget>[
-                  TextFormField(
-                    decoration: new InputDecoration(
-                      labelText: "Search Here",
-                      //disabledBorder: InputBorder.,
-                      //enabledBorder: InputBorder.none,
+                  Form(
+                    key: _formkey,
+                    child: TextFormField(
+                      decoration: new InputDecoration(
+                        labelText: "Search Here",
+                        //disabledBorder: InputBorder.,
+                        //enabledBorder: InputBorder.none,
+                      ),
+                      autofocus: false,
+                      onSaved: (input) => _search = input,
+                      textInputAction: TextInputAction.search,
+                      onFieldSubmitted: (input) {
+                        setState(() {
+                          _search = input;
+                        });
+                      },
                     ),
-                    autofocus: false,
                   ),
                   buildList(),
                 ],

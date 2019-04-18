@@ -1,19 +1,17 @@
-import 'package:flutter/material.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 
-class _ThemeData {
-  static final _ThemeData _singleton = new _ThemeData._internal();
+QuerySnapshot csnapshot, psnapshot, cartsnapshot, usersnapshot;
+CollectionReference preference, creference, cartreference, userreference;
 
-  factory _ThemeData(){
-    return _singleton;
-  }
-
-  ThemeData theme;
-  String lol = "Hahayes";
-
-  _ThemeData._internal(){
-    theme = new ThemeData(
-        brightness: Brightness.dark
-    );
+class Update {
+  Future<void> updateData() async {
+    preference = Firestore.instance.collection("Products");
+    psnapshot = await preference.getDocuments();
+    creference = Firestore.instance.collection("Category");
+    csnapshot = await creference.getDocuments();
+    userreference = Firestore.instance.collection("users");
+    usersnapshot = await userreference.getDocuments();
+    cartreference = Firestore.instance.collection("/users/test/cart");
+    cartsnapshot = await creference.getDocuments();
   }
 }
-

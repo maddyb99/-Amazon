@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:Not_Amazon/Drawer.dart';
 import 'package:Not_Amazon/FloatingActionButton.dart';
+import 'package:Not_Amazon/Global.dart';
 import 'package:Not_Amazon/Screens/ItemList.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -14,7 +15,10 @@ class Category extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return new Categories(title: 'Categories', initpage: initpage,);
+    return new Categories(
+      title: 'Categories',
+      initpage: initpage,
+    );
   }
 }
 
@@ -35,7 +39,7 @@ class _CategoryState extends State<Categories> with TickerProviderStateMixin {
   TabController _tabController;
   int _itemCount, _pid, _length;
   CollectionReference reference;
-  QuerySnapshot snapshot;
+  QuerySnapshot csnapshot;
   bool _loaded;
   PageController _pageController;
 
@@ -62,15 +66,14 @@ class _CategoryState extends State<Categories> with TickerProviderStateMixin {
                 child: CachedNetworkImage(
                     placeholder: (context, a) =>
                         Center(child: CircularProgressIndicator()),
-                    imageUrl: cat['image'])
-            ),
+                    imageUrl: cat['image'])),
             elevation: 0.0,
           ),
           ItemPage(
               fn: addCart,
               color: _appBarColor,
               items: _itemCount,
-              id: cat["id"])
+              id: cat["id"]),
         ],
       ),
     );
@@ -82,9 +85,9 @@ class _CategoryState extends State<Categories> with TickerProviderStateMixin {
     });
   }
 
-  void update(DocumentSnapshot snapshot) {
+  void update(DocumentSnapshot csnapshot) {
     setState(() {
-      //_snapshot=snapshot;
+      //_csnapshot=csnapshot;
     });
   }
 
@@ -92,26 +95,22 @@ class _CategoryState extends State<Categories> with TickerProviderStateMixin {
     StreamBuilder(
         stream: Firestore.instance.collection('Category').snapshots(),
         builder: (context, snapshot) {
-          while (!snapshot.hasData)
-            update(snapshot.data.documents);
-        }
-    );
+          while (!snapshot.hasData) update(snapshot.data.documents);
+        });
   }
 
   // ignore: missing_return
   Future<void> tabs() async {
     reference = Firestore.instance.collection("Category");
-    snapshot = await reference.getDocuments();
+    csnapshot = await reference.getDocuments();
     setState(() {
       _loaded = true;
-      _appBarColor =
-          Color(snapshot.documents[widget.initpage]['color']);
-      _fabColor = Color(snapshot.documents[widget.initpage]['color']);
+      _appBarColor = Color(csnapshot.documents[widget.initpage]['color']);
+      _fabColor = Color(csnapshot.documents[widget.initpage]['color']);
     });
-    _length = snapshot.documents.length;
-    _tabController =
-        TabController(
-            length: _length, vsync: this, initialIndex: widget.initpage);
+    _length = csnapshot.documents.length;
+    _tabController = TabController(
+        length: _length, vsync: this, initialIndex: widget.initpage);
     tab = new List();
     for (int i = 0; i < _length; i++) {
       tab.add(
@@ -121,18 +120,18 @@ class _CategoryState extends State<Categories> with TickerProviderStateMixin {
               Padding(
                   padding: const EdgeInsets.only(left: 8.0, right: 8.0),
                   child: Hero(
-                    tag: "c" +
-                        snapshot.documents[i]["id"].toString(),
+                    tag: "c" + csnapshot.documents[i]["id"].toString(),
                     child: CachedNetworkImage(
-                      imageUrl: snapshot.documents[i]['icon'],
+                      imageUrl: csnapshot.documents[i]['icon'],
                       height: 25.0,
                       width: 25.0,
                       placeholder: (context, a) =>
-                          Center(child: CircularProgressIndicator(),),
+                          Center(
+                            child: CircularProgressIndicator(),
+                          ),
                     ),
-                  )
-              ),
-              Text(snapshot.documents[i]['title']),
+                  )),
+              Text(csnapshot.documents[i]['title']),
             ],
           ),
         ),
@@ -148,11 +147,9 @@ class _CategoryState extends State<Categories> with TickerProviderStateMixin {
           isScrollable: true,
           controller: _tabController,
           onTap: (int tab) {
-            _pageController.animateToPage(
-                tab, duration: Duration(milliseconds: 300),
-                curve: Curves.linear);
-          }
-      );
+            _pageController.animateToPage(tab,
+                duration: Duration(milliseconds: 300), curve: Curves.linear);
+          });
     else
       return CircularProgressIndicator();
   }
@@ -160,7 +157,7 @@ class _CategoryState extends State<Categories> with TickerProviderStateMixin {
   void pages() {
     cards = new List();
     for (int i = 0; i < _length; i++) {
-      cards.add(createCard(snapshot.documents[i]));
+      cards.add(createCard(csnapshot.documents[i]));
     }
   }
 
@@ -168,7 +165,11 @@ class _CategoryState extends State<Categories> with TickerProviderStateMixin {
   Widget build(BuildContext context) {
     return new Scaffold(
       appBar: AppBar(
-        title: new Text('!Amazon'),
+        title: new Image.asset(
+          'assets/images/logo.png',
+          color: Colors.black,
+          fit: BoxFit.fill,
+        ),
         //backgroundColor: Colors.black,
         leading: Builder(
           builder: (BuildContext context) {
@@ -183,24 +184,31 @@ class _CategoryState extends State<Categories> with TickerProviderStateMixin {
             );
           },
         ),
+        actions: <Widget>[
+          FlatButton(
+              onPressed: () {
+                Update();
+                setState(() {});
+              },
+              child: Icon(Icons.refresh)),
+        ],
         bottom: tabcreate(),
         backgroundColor: _appBarColor,
         shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.all(Radius.circular(10.0))),
       ),
       drawer: DrawDrawer(color: _appBarColor),
-      floatingActionButton: FABCart(color: _fabColor, items: _itemCount),
+      floatingActionButton: FABCart(color: _fabColor),
       body: PageView(
         controller: _pageController,
         children: cards,
         onPageChanged: (int page) {
           setState(() {
-            _appBarColor =
-                Color(snapshot.documents[page.round()]['color']);
-            _fabColor = Color(snapshot.documents[page.round()]['color']);
+            _appBarColor = Color(csnapshot.documents[page.round()]['color']);
+            _fabColor = Color(csnapshot.documents[page.round()]['color']);
             if (_tabController.animation.value.round() != page)
               _tabController.animateTo(page);
-            _pid = snapshot.documents[page.round()]['id'];
+            _pid = csnapshot.documents[page.round()]['id'];
           });
         },
       ),

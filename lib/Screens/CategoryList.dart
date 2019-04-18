@@ -1,5 +1,6 @@
 import 'package:Not_Amazon/Drawer.dart';
 import 'package:Not_Amazon/FloatingActionButton.dart';
+import 'package:Not_Amazon/Global.dart';
 import 'package:Not_Amazon/Screens/Categories.dart';
 import 'package:Not_Amazon/Screens/ItemList.dart';
 import 'package:cached_network_image/cached_network_image.dart';
@@ -31,7 +32,7 @@ class _CategoryListState extends State<CategoryListPage>
 
   void initState() {
     _itemCount = 0;
-
+    Update();
     refresh();
     super.initState();
   }
@@ -129,7 +130,8 @@ class _CategoryListState extends State<CategoryListPage>
   Widget build(BuildContext context) {
     return new Scaffold(
       appBar: AppBar(
-        title: new Text('!Amazon'),
+        title: new Image.asset(
+          'assets/images/logo.png', color: Colors.black, fit: BoxFit.fill,),
         //backgroundColor: Colors.black,
         leading: Builder(
           builder: (BuildContext context) {
@@ -147,7 +149,7 @@ class _CategoryListState extends State<CategoryListPage>
             borderRadius: BorderRadius.all(Radius.circular(10.0))),
       ),
       drawer: DrawDrawer(color: _appBarColor),
-      floatingActionButton: FABCart(color: _fabColor, items: _itemCount),
+      floatingActionButton: FABCart(color: _fabColor),
       body: tabs(),
       //backgroundColor: _backgroundColor,
     );

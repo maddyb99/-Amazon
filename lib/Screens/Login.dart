@@ -31,7 +31,7 @@ class _LoginState extends State<LoginPage> {
         actions: <Widget>[
           FlatButton(
             onPressed: () {
-              Navigator.push(context,
+              Navigator.pushReplacement(context,
                   MaterialPageRoute(builder: (context) => Hme()));
             },
             splashColor: Theme.of(context).scaffoldBackgroundColor,

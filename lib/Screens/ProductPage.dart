@@ -106,7 +106,6 @@ class _ProductPageState extends State<ProductPage> {
         drawer: DrawDrawer(),
         floatingActionButton: FABCart(
           color: widget.color,
-          items: widget.item,
         ),
         body: SingleChildScrollView(
           child: buildItem(),

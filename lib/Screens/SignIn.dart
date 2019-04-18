@@ -380,10 +380,14 @@ class _MainLoginState extends State<MainLogin> {
     return new Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: <Widget>[
-          new Image.asset(
-            'assets/images/logo.jpeg',
-            fit: BoxFit.contain,
-            scale: 15,
+          Hero(
+            tag: "logo",
+            child: new Image.asset(
+              'assets/images/logo.png',
+              fit: BoxFit.contain,
+              scale: 8,
+              //color: Colors.black,
+            ),
           ),
           Form(
             key: _formKey,

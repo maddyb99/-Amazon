@@ -1,5 +1,6 @@
 import 'dart:async' show Future;
 
+import 'package:Not_Amazon/Global.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
@@ -33,6 +34,7 @@ class SignUpState extends State<SignUp> {
         });
         user = await FirebaseAuth.instance
             .createUserWithEmailAndPassword(email: _email, password: _password);
+        userreference.add({'email': _email, 'name': _name});
         Navigator.of(context).pushReplacementNamed('/Home');
         setState(() {
           _signup = false;
