@@ -15,8 +15,9 @@ class DrawDrawer extends StatefulWidget {
 
 class _DrawDrawerState extends State<DrawDrawer> {
   Widget nightIcon() {
-    return (DrawDrawer._night) ? Icon(Icons.brightness_low) : Icon(
-        Icons.brightness_high);
+    return (DrawDrawer._night)
+        ? Icon(Icons.brightness_low)
+        : Icon(Icons.brightness_high);
   }
 
   @override
@@ -49,7 +50,9 @@ class _DrawDrawerState extends State<DrawDrawer> {
                     Navigator.of(context).pushNamed('/CatList');
                   },
                 ),
-                Divider(height: 5.0,),
+                Divider(
+                  height: 5.0,
+                ),
               ],
             ),
           ),

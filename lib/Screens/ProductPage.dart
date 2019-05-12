@@ -22,13 +22,16 @@ class _ProductPageState extends State<ProductPage> {
         stream: Firestore.instance.collection("Products").snapshots(),
         builder: (context, snapshot) {
           if (!snapshot.hasData)
-            return Center(child: CircularProgressIndicator(),);
+            return Center(
+              child: CircularProgressIndicator(),
+            );
           else {
             List<Widget> itemList = new List(),
                 imageList = new List();
             for (int i = 0; i < snapshot.data.documents.length; i++) {
               if (snapshot.data.documents[i]["id"] == widget.id) {
-                for (int j = 0; j < snapshot.data.documents[i]["image"].length;
+                for (int j = 0;
+                j < snapshot.data.documents[i]["image"].length;
                 j++) {
                   imageList.add(
                     Hero(
@@ -38,7 +41,9 @@ class _ProductPageState extends State<ProductPage> {
                         height: 300.0,
                         width: double.maxFinite,
                         placeholder: (context, a) =>
-                            Center(child: CircularProgressIndicator(),),
+                            Center(
+                              child: CircularProgressIndicator(),
+                            ),
                       ),
                     ),
                   );
@@ -54,34 +59,37 @@ class _ProductPageState extends State<ProductPage> {
                         ),
                         Align(
                           alignment: Alignment.centerRight,
-                          child: Icon(Icons.chevron_right, size: 35.0,),
+                          child: Icon(
+                            Icons.chevron_right,
+                            size: 35.0,
+                          ),
                         ),
                         Align(
                           alignment: Alignment.centerLeft,
-                          child: Icon(Icons.chevron_left, size: 35.0,),
+                          child: Icon(
+                            Icons.chevron_left,
+                            size: 35.0,
+                          ),
                         )
                       ],
                     ),
                   ),
                 );
-                itemList.add(
-                    Divider(height: 5.0,)
-                );
-                itemList.add(
-                    Row(
-                      children: <Widget>[
-                        Text(snapshot.data.documents[i]["title"]),
-                      ],
-                    )
-                );
+                itemList.add(Divider(
+                  height: 5.0,
+                ));
+                itemList.add(Row(
+                  children: <Widget>[
+                    Text(snapshot.data.documents[i]["title"]),
+                  ],
+                ));
               }
             }
             return Column(
               children: itemList,
             );
           }
-        }
-    );
+        });
   }
 
   @override

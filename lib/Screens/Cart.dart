@@ -16,18 +16,21 @@ class _CartState extends State<Cart> {
   int _qty, cart;
   List<Widget> itemList = new List();
 
+  void refresh() {
+    getCart();
+    setState(() {});
+  }
+
   void initState() {
     _qty = 0;
     cart = 0;
     getCart();
+    if (cartsnapshot == null)
+      Update(fn: refresh);
     super.initState();
   }
 
   Future<void> getCart() async {
-    preference = Firestore.instance.collection("Products");
-    psnapshot = await preference.getDocuments();
-    cartreference = Firestore.instance.collection("/users/test/cart");
-    cartsnapshot = await cartreference.getDocuments();
     setState(() {
       cart = cartsnapshot.documents.length;
     });
@@ -46,23 +49,21 @@ class _CartState extends State<Cart> {
             dense: true,
             contentPadding: EdgeInsets.all(0.0),
             leading: Hero(
-              tag: "p" +
-                  psnapshot.documents[i]["id"].toString(),
+              tag: "p" + psnapshot.documents[i]["id"].toString(),
               child: CachedNetworkImage(
                 imageUrl: psnapshot.documents[i]["image"][0],
                 height: 50.0,
                 width: 50.0,
-                placeholder: (context, a) =>
-                    CircularProgressIndicator(),
+                placeholder: (context, a) => CircularProgressIndicator(),
               ),
             ),
             title: Text(psnapshot.documents[i]["title"]),
-            trailing: FlatButton(onPressed: () {
-              cartreference.document(cartItem.documentID).delete();
-              Update();
-              getCart();
-              setState(() {});
-            }, child: Icon(Icons.delete)),
+            trailing: FlatButton(
+                onPressed: () {
+                  cartreference.document(cartItem.documentID).delete();
+                  Update(fn: refresh);
+                },
+                child: Icon(Icons.delete)),
             subtitle: Row(
               children: <Widget>[
                 Text("Qty:"),
@@ -73,9 +74,10 @@ class _CartState extends State<Cart> {
                       onPressed: () {
                         setState(() {
                           if (_qty > 1) _qty--;
-                          cartreference.document(cartItem.documentID)
+                          cartreference
+                              .document(cartItem.documentID)
                               .updateData({'qty': _qty});
-                          getCart();
+                          Update(fn: refresh);
                         });
                       },
                       child: Icon(Icons.remove)),
@@ -88,9 +90,10 @@ class _CartState extends State<Cart> {
                       onPressed: () {
                         setState(() {
                           _qty++;
-                          cartreference.document(cartItem.documentID)
+                          cartreference
+                              .document(cartItem.documentID)
                               .updateData({'qty': _qty});
-                          getCart();
+                          Update(fn: refresh);
                         });
                       },
                       child: Icon(Icons.add)),
@@ -107,7 +110,10 @@ class _CartState extends State<Cart> {
     return Scaffold(
       appBar: AppBar(
         title: new Image.asset(
-          'assets/images/logo.png', color: Colors.black, fit: BoxFit.fill,),
+          'assets/images/logo.png',
+          color: Colors.black,
+          fit: BoxFit.fill,
+        ),
         //backgroundColor: Colors.black,
         leading: Builder(
           builder: (BuildContext context) {
@@ -127,6 +133,7 @@ class _CartState extends State<Cart> {
       ),
       drawer: DrawDrawer(),
       floatingActionButton: FABCloseCart(),
+      floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
       body: Padding(
         padding: const EdgeInsets.all(8.0),
         child: SingleChildScrollView(

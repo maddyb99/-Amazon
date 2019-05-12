@@ -31,7 +31,6 @@ class SignInPage extends StatefulWidget {
 }
 
 class _SignInState extends State<SignInPage> with TickerProviderStateMixin {
-
   final GlobalKey<FormState> _formKey2 = GlobalKey<FormState>();
   Animation<double> animation;
   AnimationController controller;
@@ -104,7 +103,6 @@ class _SignInState extends State<SignInPage> with TickerProviderStateMixin {
     }
   }
 
-
   Widget isReset() {
     if (_reset)
       return Container(
@@ -168,8 +166,8 @@ class _SignInState extends State<SignInPage> with TickerProviderStateMixin {
                     child: Icon(Icons.arrow_back),
                   ),
                   Padding(
-                    padding: const EdgeInsets.only(
-                        right: 28.0, top: 8.0, left: 8.0),
+                    padding:
+                    const EdgeInsets.only(right: 28.0, top: 8.0, left: 8.0),
                     child: isReset(),
                   ),
                 ],
@@ -237,19 +235,24 @@ class _SignInState extends State<SignInPage> with TickerProviderStateMixin {
           ],
         ),
       );
-    }
-    else if (_signUp == 2) {
-      fw ? controller.forward(from: 0.0) : controller.reverse();
-      return FadeTransition(opacity: animation, child: SignUp(fn: random),);
-    }
-    else if (_forgot) {
-      fw ? controller.forward(from: 0.0) : controller.reverse();
-      return FadeTransition(opacity: animation, child: forgotPass(),);
-    }
-    else {
+    } else if (_signUp == 2) {
       fw ? controller.forward(from: 0.0) : controller.reverse();
       return FadeTransition(
-        opacity: animation, child: MainLogin(fn: random, fn2: random2),);
+        opacity: animation,
+        child: SignUp(fn: random),
+      );
+    } else if (_forgot) {
+      fw ? controller.forward(from: 0.0) : controller.reverse();
+      return FadeTransition(
+        opacity: animation,
+        child: forgotPass(),
+      );
+    } else {
+      fw ? controller.forward(from: 0.0) : controller.reverse();
+      return FadeTransition(
+        opacity: animation,
+        child: MainLogin(fn: random, fn2: random2),
+      );
     }
   }
 
@@ -260,8 +263,7 @@ class _SignInState extends State<SignInPage> with TickerProviderStateMixin {
     Future.delayed(d, () {
       setState(() {
         _signUp++;
-        if (_signUp == 3)
-          _signUp = 0;
+        if (_signUp == 3) _signUp = 0;
         fw = !fw;
       });
     });

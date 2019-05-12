@@ -13,14 +13,15 @@ class FABCart extends StatefulWidget {
 class _FABCartState extends State<FABCart> {
   int count;
 
+  void refresh() {
+    itemCount();
+    setState(() {});
+  }
+
   void initState() {
     count = 0;
-    Update();
-    Future.delayed(Duration(seconds: 2), () {
-      setState(() {
-        count = cartsnapshot != null ? cartsnapshot.documents.length : 0;
-      });
-    });
+    if (cartsnapshot == null)
+      Update(fn: refresh);
     //count=cartsnapshot.documents.length;
     super.initState();
   }
@@ -33,8 +34,7 @@ class _FABCartState extends State<FABCart> {
       return Container(
         height: double.maxFinite,
         width: double.maxFinite,
-        padding:
-        EdgeInsets.only(right: count > 9 ? 6.0 : 13.0, bottom: 13.0),
+        padding: EdgeInsets.only(right: count > 9 ? 6.0 : 13.0, bottom: 13.0),
         alignment: Alignment.bottomRight,
         child: Text(
           count.toString(),

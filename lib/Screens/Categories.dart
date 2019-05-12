@@ -37,17 +37,18 @@ class _CategoryState extends State<Categories> with TickerProviderStateMixin {
   ScrollActivityDelegate delegate;
   List<Widget> tab, cards;
   TabController _tabController;
-  int _itemCount, _pid, _length;
+  int _itemCount, _length;
   CollectionReference reference;
   QuerySnapshot csnapshot;
   bool _loaded;
   PageController _pageController;
 
   void initState() {
+    if (psnapshot == null || csnapshot == null)
+      Update(fn: refresh).updateData();
     _loaded = false;
     tabs();
     _itemCount = widget.initpage;
-    print(widget.initpage);
     _pageController = PageController(
       initialPage: widget.initpage,
     );
@@ -85,24 +86,13 @@ class _CategoryState extends State<Categories> with TickerProviderStateMixin {
     });
   }
 
-  void update(DocumentSnapshot csnapshot) {
-    setState(() {
-      //_csnapshot=csnapshot;
-    });
-  }
-
   void refresh() {
-    StreamBuilder(
-        stream: Firestore.instance.collection('Category').snapshots(),
-        builder: (context, snapshot) {
-          while (!snapshot.hasData) update(snapshot.data.documents);
-        });
+    tabs();
+    setState(() {});
   }
 
   // ignore: missing_return
   Future<void> tabs() async {
-    reference = Firestore.instance.collection("Category");
-    csnapshot = await reference.getDocuments();
     setState(() {
       _loaded = true;
       _appBarColor = Color(csnapshot.documents[widget.initpage]['color']);
@@ -148,7 +138,8 @@ class _CategoryState extends State<Categories> with TickerProviderStateMixin {
           controller: _tabController,
           onTap: (int tab) {
             _pageController.animateToPage(tab,
-                duration: Duration(milliseconds: 300), curve: Curves.linear);
+                duration: Duration(milliseconds: 300),
+                curve: Curves.easeInCirc);
           });
     else
       return CircularProgressIndicator();
@@ -187,8 +178,7 @@ class _CategoryState extends State<Categories> with TickerProviderStateMixin {
         actions: <Widget>[
           FlatButton(
               onPressed: () {
-                Update();
-                setState(() {});
+                Update(fn: refresh);
               },
               child: Icon(Icons.refresh)),
         ],
@@ -208,7 +198,6 @@ class _CategoryState extends State<Categories> with TickerProviderStateMixin {
             _fabColor = Color(csnapshot.documents[page.round()]['color']);
             if (_tabController.animation.value.round() != page)
               _tabController.animateTo(page);
-            _pid = csnapshot.documents[page.round()]['id'];
           });
         },
       ),

@@ -19,7 +19,6 @@ class LoginPage extends StatefulWidget {
 }
 
 class _LoginState extends State<LoginPage> {
-
   final _scaffoldKey = GlobalKey<ScaffoldState>();
 
   @override
@@ -31,8 +30,8 @@ class _LoginState extends State<LoginPage> {
         actions: <Widget>[
           FlatButton(
             onPressed: () {
-              Navigator.pushReplacement(context,
-                  MaterialPageRoute(builder: (context) => Hme()));
+              Navigator.pushReplacement(
+                  context, MaterialPageRoute(builder: (context) => Hme()));
             },
             splashColor: Theme.of(context).scaffoldBackgroundColor,
             child: new Text('Skip'),
@@ -43,9 +42,7 @@ class _LoginState extends State<LoginPage> {
         bottomOpacity: 0.0,
       ),
       body: Center(
-        child: SingleChildScrollView(
-            child: SignIn()
-        ),
+        child: SingleChildScrollView(child: SignIn()),
       ),
     );
   }

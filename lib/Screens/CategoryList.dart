@@ -2,9 +2,7 @@ import 'package:Not_Amazon/Drawer.dart';
 import 'package:Not_Amazon/FloatingActionButton.dart';
 import 'package:Not_Amazon/Global.dart';
 import 'package:Not_Amazon/Screens/Categories.dart';
-import 'package:Not_Amazon/Screens/ItemList.dart';
 import 'package:cached_network_image/cached_network_image.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 
 class CategoryList extends StatelessWidget {
@@ -28,102 +26,57 @@ class _CategoryListState extends State<CategoryListPage>
   Color _appBarColor = Colors.cyan, _fabColor = Colors.cyan;
   ScrollActivityDelegate delegate;
   List<Widget> tab;
-  int _itemCount, _pid;
 
   void initState() {
-    _itemCount = 0;
-    Update();
-    refresh();
+    if (csnapshot == null)
+      Update(fn: refresh).updateData();
+    tab = new List<Widget>();
+    tabs();
     super.initState();
   }
 
-  Widget createCard(DocumentSnapshot cat) {
-    return SingleChildScrollView(
-      child: Column(
-        children: <Widget>[
-          Card(
-            child: Container(
-                height: 200.0,
-                width: double.maxFinite,
-                child: CachedNetworkImage(
-                    placeholder: (context, a) =>
-                        Center(child: CircularProgressIndicator()),
-                    imageUrl: cat['image'])),
-            elevation: 0.0,
-          ),
-          ItemPage(
-              fn: addCart, color: _appBarColor, items: _itemCount, id: _pid)
-        ],
-      ),
-    );
-  }
-
-  void addCart() {
-    setState(() {
-      _itemCount++;
-    });
-  }
-
-  void update(DocumentSnapshot snapshot) {
-    setState(() {
-      //_snapshot=snapshot;
-    });
-  }
-
   void refresh() {
-    StreamBuilder(
-        stream: Firestore.instance.collection('Category').snapshots(),
-        builder: (context, snapshot) {
-          while (!snapshot.hasData) update(snapshot.data.documents);
-        });
+    tabs();
+    setState(() {});
   }
 
-  Widget tabs() {
-    return PreferredSize(
-      preferredSize: Size(double.maxFinite, 50.0),
-      child: StreamBuilder(
-        stream: Firestore.instance.collection('Category').snapshots(),
-        builder: (context, snapshot) {
-          if (!snapshot.hasData)
-            return Center(
-              child: CircularProgressIndicator(
-                value: null,
-              ),
-            );
-          tab = new List<Widget>.generate(
-            snapshot.data.documents.length,
-            (i) => FlatButton(
-                  onPressed: () {
-                    Navigator.of(context).push(MaterialPageRoute(
-                        builder: (context) => Category(initpage: i)));
-                  },
-                  child: Row(
-                    children: <Widget>[
-                      Padding(
-                          padding: const EdgeInsets.only(left: 8.0, right: 8.0),
-                          child: Hero(
-                            tag: "c" +
-                                snapshot.data.documents[i]["id"].toString(),
-                            child: CachedNetworkImage(
-                              imageUrl: snapshot.data.documents[i]['icon'],
-                              height: 25.0,
-                              width: 25.0,
-                              placeholder: (context, a) => Center(
-                                    child: CircularProgressIndicator(),
-                                  ),
+  void tabs() async {
+    tab.clear();
+    if (csnapshot == null) {
+      tab.add(Center(
+        child: CircularProgressIndicator(
+          value: null,
+        ),
+      ));
+    } else
+      for (int i = 0; i < csnapshot.documents.length; i++)
+        tab.add(
+          FlatButton(
+            onPressed: () {
+              Navigator.of(context).push(MaterialPageRoute(
+                  builder: (context) => Category(initpage: i)));
+            },
+            child: Row(
+              children: <Widget>[
+                Padding(
+                    padding: const EdgeInsets.only(left: 8.0, right: 8.0),
+                    child: Hero(
+                      tag: "c" + csnapshot.documents[i]["id"].toString(),
+                      child: CachedNetworkImage(
+                        imageUrl: csnapshot.documents[i]['icon'],
+                        height: 25.0,
+                        width: 25.0,
+                        placeholder: (context, a) =>
+                            Center(
+                              child: CircularProgressIndicator(),
                             ),
-                          )),
-                      Text(snapshot.data.documents[i]['title']),
-                    ],
-                  ),
-                ),
-          );
-          return Column(
-            children: tab,
-          );
-        },
-      ),
-    );
+                      ),
+                    )),
+                Text(csnapshot.documents[i]['title']),
+              ],
+            ),
+          ),
+        );
   }
 
   @override
@@ -131,7 +84,10 @@ class _CategoryListState extends State<CategoryListPage>
     return new Scaffold(
       appBar: AppBar(
         title: new Image.asset(
-          'assets/images/logo.png', color: Colors.black, fit: BoxFit.fill,),
+          'assets/images/logo.png',
+          color: Colors.black,
+          fit: BoxFit.fill,
+        ),
         //backgroundColor: Colors.black,
         leading: Builder(
           builder: (BuildContext context) {
@@ -147,10 +103,22 @@ class _CategoryListState extends State<CategoryListPage>
         backgroundColor: _appBarColor,
         shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.all(Radius.circular(10.0))),
+        actions: <Widget>[
+          FlatButton(
+              onPressed: () {
+                tab.clear();
+                tab.add(Center(child: CircularProgressIndicator(),));
+                setState(() {});
+                Update(fn: refresh).updateData();
+              },
+              child: Icon(Icons.refresh)),
+        ],
       ),
       drawer: DrawDrawer(color: _appBarColor),
       floatingActionButton: FABCart(color: _fabColor),
-      body: tabs(),
+      body: Column(
+        children: tab,
+      ),
       //backgroundColor: _backgroundColor,
     );
   }

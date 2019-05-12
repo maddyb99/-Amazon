@@ -37,50 +37,55 @@ class _HomeState extends State<HomePage> {
 
   void initState() {
     _search = null;
+    super.initState();
   }
+
   Widget buildList() {
     return StreamBuilder(
-        stream: Firestore.instance.collection("Products").snapshots(),
+        stream:
+        Firestore.instance.collection("Products").orderBy("id").snapshots(),
         builder: (context, snapshot) {
           if (!snapshot.hasData)
-            return Center(child: CircularProgressIndicator(),);
+            return Center(
+              child: CircularProgressIndicator(),
+            );
           else {
             List<Widget> itemList = new List();
             for (int i = 0; i < snapshot.data.documents.length; i++) {
               if (_search == null ||
-                  snapshot.data.documents[i]["title"].toLowerCase().contains(
-                      _search.toLowerCase())) {
-                itemList.add(
-                    Card(
-                      child: FlatButton(
-                        child: Column(
-                          children: <Widget>[
-                            Hero(
-                              tag: "p" +
-                                  snapshot.data.documents[i]["id"].toString(),
-                              child: CachedNetworkImage(
-                                imageUrl: snapshot.data
-                                    .documents[i]["image"][0],
-                                height: 50.0,
-                                width: 50.0,
-                                placeholder: (context, a) =>
-                                    Center(child: CircularProgressIndicator(),),
-                              ),
-                            ),
-                            Center(
-                                child: Text(
-                                    snapshot.data.documents[i]["title"])),
-                          ],
+                  snapshot.data.documents[i]["title"]
+                      .toLowerCase()
+                      .contains(_search.toLowerCase())) {
+                itemList.add(Card(
+                  child: FlatButton(
+                    child: Column(
+                      children: <Widget>[
+                        Hero(
+                          tag:
+                          "p" + snapshot.data.documents[i]["id"].toString(),
+                          child: CachedNetworkImage(
+                            imageUrl: snapshot.data.documents[i]["image"][0],
+                            height: 50.0,
+                            width: 50.0,
+                            placeholder: (context, a) =>
+                                Center(
+                                  child: CircularProgressIndicator(),
+                                ),
+                          ),
                         ),
-                        onPressed: () {
-                          Navigator.of(context).push(
-                              MaterialPageRoute(builder: (context) =>
-                                  ProductPage(
-                                    id: snapshot.data.documents[i]["id"],)));
-                        },
-                      ),
-                    )
-                );
+                        Center(
+                            child: Text(snapshot.data.documents[i]["title"])),
+                      ],
+                    ),
+                    onPressed: () {
+                      Navigator.of(context).push(MaterialPageRoute(
+                          builder: (context) =>
+                              ProductPage(
+                                id: snapshot.data.documents[i]["id"],
+                              )));
+                    },
+                  ),
+                ));
               }
             }
             print(itemList.length);
@@ -88,30 +93,35 @@ class _HomeState extends State<HomePage> {
               children: itemList,
             );
           }
-        }
-    );
+        });
   }
 
   @override
   Widget build(BuildContext context) {
     return new Scaffold(
-      appBar: AppBar(
-        title: new Image.asset(
-          'assets/images/logo.png', color: Colors.black, fit: BoxFit.fill,),
-        //backgroundColor: Colors.black,
-        leading: Builder(
-          builder: (BuildContext context) {
-            return IconButton(
-              icon: const Icon(Icons.menu),
-              onPressed: () {
-                Scaffold.of(context).openDrawer();
-              },
-              tooltip: MaterialLocalizations.of(context).openAppDrawerTooltip,
-            );
-          },
+        appBar: AppBar(
+          title: new Image.asset(
+            'assets/images/logo.png',
+            color: Colors.black,
+            fit: BoxFit.fill,
+          ),
+          //backgroundColor: Colors.black,
+          leading: Builder(
+            builder: (BuildContext context) {
+              return IconButton(
+                icon: const Icon(Icons.menu),
+                onPressed: () {
+                  Scaffold.of(context).openDrawer();
+                },
+                tooltip: MaterialLocalizations
+                    .of(context)
+                    .openAppDrawerTooltip,
+              );
+            },
+          ),
+          shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.all(Radius.circular(10.0))),
         ),
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.all(Radius.circular(10.0))),
-      ),
         drawer: DrawDrawer(),
         floatingActionButton: FABCart(),
         body: SingleChildScrollView(

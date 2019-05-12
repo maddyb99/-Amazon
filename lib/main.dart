@@ -19,10 +19,10 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return new MaterialApp(
       title: '!Amazon',
-      routes: <String, WidgetBuilder> {
-        '/Splash':(BuildContext context) => new Splash(),
-        '/Login':(BuildContext context) => new Login(),
-        '/Home':(BuildContext context) => new Hme(),
+      routes: <String, WidgetBuilder>{
+        '/Splash': (BuildContext context) => new Splash(),
+        '/Login': (BuildContext context) => new Login(),
+        '/Home': (BuildContext context) => new Hme(),
         '/Items': (BuildContext context) => new ItemPage(),
         '/Cat': (BuildContext context) => new Category(),
         '/CatList': (BuildContext context) => new CategoryList(),

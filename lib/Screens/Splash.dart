@@ -13,12 +13,11 @@ class Splash extends StatefulWidget {
 class SplashState extends State<Splash> {
   @override
   void initState() {
-    Update();
+    Update(fn: null);
     //print(MediaQuery.of(context).size.height);
     //print(MediaQuery.of(context).size.width);
     Future.delayed(Duration(seconds: 2), () {
-      Navigator.of(context)
-          .pushReplacementNamed('/Login');
+      Navigator.of(context).pushReplacementNamed('/Login');
     });
     super.initState();
   }
@@ -29,8 +28,8 @@ class SplashState extends State<Splash> {
       body: Padding(
         padding: const EdgeInsets.all(50.0),
         child: new Center(
-          child: Hero(
-              tag: "logo", child: Image.asset('assets/images/logo.png')),
+          child:
+          Hero(tag: "logo", child: Image.asset('assets/images/logo.png')),
         ),
       ),
       // )

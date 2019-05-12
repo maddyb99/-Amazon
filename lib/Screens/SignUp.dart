@@ -1,6 +1,7 @@
 import 'dart:async' show Future;
 
 import 'package:Not_Amazon/Global.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
@@ -34,7 +35,11 @@ class SignUpState extends State<SignUp> {
         });
         user = await FirebaseAuth.instance
             .createUserWithEmailAndPassword(email: _email, password: _password);
-        userreference.add({'email': _email, 'name': _name});
+        userreference = Firestore.instance.collection("users");
+        userreference.document().setData({'email': _email, 'name': _name});
+        usersnapshot = await userreference
+            .where('email', isEqualTo: _email)
+            .getDocuments();
         Navigator.of(context).pushReplacementNamed('/Home');
         setState(() {
           _signup = false;

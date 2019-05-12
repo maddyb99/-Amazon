@@ -15,7 +15,7 @@ class ItemPage extends StatefulWidget {
   _ItemState createState() => new _ItemState();
 }
 
-class _ItemState extends State <ItemPage>{
+class _ItemState extends State<ItemPage> {
   int count = 0;
   CollectionReference reference;
   QuerySnapshot psnapshot;
@@ -24,59 +24,56 @@ class _ItemState extends State <ItemPage>{
   void initState() {
     buildList();
     itemList = null;
+    super.initState();
+  }
+
+  void refresh() {
+    setState(() {});
   }
 
   void buildList() async {
     //initState();
-    psnapshot = await preference.getDocuments();
-    setState(() {
-
-    });
+    psnapshot =
+    await preference.where("catid", isEqualTo: widget.id).getDocuments();
+    refresh();
     itemList = new List();
     for (int i = 0; i < psnapshot.documents.length; i++) {
-      if (psnapshot.documents[i]["catid"] == widget.id) {
-        print(psnapshot.documents[i]["catid"]);
-        itemList.add(
-          Card(
-              child: ListTile(
-                isThreeLine: true,
-                leading: Hero(
-                  tag: "p" +
-                      psnapshot.documents[i]["id"].toString(),
-                  child: CachedNetworkImage(
-                    imageUrl: psnapshot.documents[i]["image"][0],
-                    height: 50.0,
-                    width: 50.0,
-                    placeholder: (context, a) =>
-                        CircularProgressIndicator(),
-                  ),
+      itemList.add(
+        Card(
+            child: ListTile(
+              isThreeLine: true,
+              leading: Hero(
+                tag: "p" + psnapshot.documents[i]["id"].toString(),
+                child: CachedNetworkImage(
+                  imageUrl: psnapshot.documents[i]["image"][0],
+                  height: 50.0,
+                  width: 50.0,
+                  placeholder: (context, a) => CircularProgressIndicator(),
                 ),
-                title: Text(psnapshot.documents[i]["title"]),
-                subtitle: Text("Price: " +
-                    psnapshot.documents[i]["price"].toString()),
-                trailing: MaterialButton(
-                  elevation: 2.0,
-                  child: Text("Add to cart"),
-                  onPressed: () {
-                    cartreference.add(
-                        {'id': psnapshot.documents[i]["id"], 'qty': 1});
-                    setState(() {
-
-                    });
-                  },
-                ),
-                onTap: () {
-                  Navigator.of(context).push(
-                      MaterialPageRoute(builder: (context) =>
-                          ProductPage(
-                            id: psnapshot.documents[i]["id"],
-                            color: widget.color,
-                            item: widget.items,)));
+              ),
+              title: Text(psnapshot.documents[i]["title"]),
+              subtitle:
+              Text("Price: " + psnapshot.documents[i]["price"].toString()),
+              trailing: MaterialButton(
+                elevation: 2.0,
+                child: Text("Add to cart"),
+                onPressed: () {
+                  cartreference.add(
+                      {'id': psnapshot.documents[i]["id"], 'qty': 1});
+                  setState(() {});
                 },
-              )
-          ),
-        );
-      }
+              ),
+              onTap: () {
+                Navigator.of(context).push(MaterialPageRoute(
+                    builder: (context) =>
+                        ProductPage(
+                          id: psnapshot.documents[i]["id"],
+                          color: widget.color,
+                          item: widget.items,
+                        )));
+              },
+            )),
+      );
     }
     //print(itemList.length);
     /*StreamBuilder(
@@ -144,4 +141,3 @@ class _ItemState extends State <ItemPage>{
       return CircularProgressIndicator();
   }
 }
-
